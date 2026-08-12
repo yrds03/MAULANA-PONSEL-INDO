@@ -1,0 +1,17 @@
+{
+  "name": "Maulana Ponsel Indo",
+  "short_name": "Maulana POS",
+  "description": "Toko HP Iphone Android",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "1002225610.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
