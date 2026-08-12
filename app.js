@@ -282,7 +282,24 @@ function renderSidebar() {
     }
 }
 
+window.toggleSidebar = function() {
+    const sidebar = document.getElementById('sidebarContainer'); const overlay = document.getElementById('overlaySidebar');
+    if(!sidebar || !overlay) return;
+    if (sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+    } else {
+        sidebar.classList.add('-translate-x-full'); overlay.classList.add('opacity-0'); setTimeout(() => overlay.classList.add('hidden'), 300);
+    }
+};
+
 function switchMenu(viewId, title) {
+    // Auto-tutup menu tipe geser jika diakses melalui HP
+    if (window.innerWidth < 768) {
+        document.getElementById('sidebarContainer')?.classList.add('-translate-x-full');
+        const overlay = document.getElementById('overlaySidebar');
+        if(overlay) { overlay.classList.add('opacity-0'); setTimeout(() => overlay.classList.add('hidden'), 300); }
+    }
+    
     document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden')); 
     document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.remove('bg-gradient-to-r', 'from-indigo-600', 'to-purple-600', 'text-white', 'shadow-lg', 'shadow-indigo-500/30'); btn.classList.add('text-slate-400', 'hover:bg-slate-800'); });
     const target = document.getElementById(viewId); if(target) target.classList.remove('hidden');
