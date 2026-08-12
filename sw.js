@@ -1,4 +1,4 @@
-const CACHE_NAME = 'maulana-pos-v35';
+const CACHE_NAME = 'maulana-pos-v36';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -38,4 +38,10 @@ self.addEventListener('fetch', (event) => {
       return response || fetch(event.request);
     })
   );
+});
+// FITUR SANSTECH: Mendengarkan perintah dari web untuk memaksa update Service Worker
+self.addEventListener('message', function(event) {
+  if (event.data === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });

@@ -1656,3 +1656,58 @@ async function approveAbsenKaryawan(id, status) { showToast("Memproses Approval.
 
 // Eksekusi Instan saat Aplikasi Dimuat
 checkSession();
+
+// =========================================================================================
+// 14. SANSTECH PWA UPDATE NOTIFIER (DETEKSI VERSI BARU OTOMATIS)
+// =========================================================================================
+let newWorker;
+if ('serviceWorker' in navigator) {
+    // Daftarkan Service Worker
+    navigator.serviceWorker.register('sw.js').then(reg => {
+        reg.addEventListener('updatefound', () => {
+            newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+                // Jika file update sudah selesai didownload di latar belakang
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    munculkanBannerUpdate();
+                }
+            });
+        });
+    });
+
+    // Otomatis Refresh halaman saat SW baru berhasil mengambil alih
+    let refreshing;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        window.location.reload();
+        refreshing = true;
+    });
+}
+
+function munculkanBannerUpdate() {
+    const banner = document.createElement('div');
+    banner.id = "pwaUpdateBanner";
+    banner.className = "fixed top-0 left-0 w-full bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-5 shadow-2xl z-[9999] flex flex-col md:flex-row items-center justify-between gap-4 transform -translate-y-full transition-transform duration-500 border-b-4 border-indigo-400";
+    banner.innerHTML = `
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-cloud-arrow-down text-2xl animate-bounce"></i>
+            </div>
+            <div>
+                <h4 class="font-black text-sm uppercase tracking-widest text-white">Update Sistem Tersedia!</h4>
+                <p class="text-[10px] md:text-xs text-indigo-100 font-medium mt-1 leading-tight">SANSTECH Pusat telah merilis versi terbaru. Silakan update agar aplikasi berjalan maksimal dan fitur baru terbuka.</p>
+            </div>
+        </div>
+        <button onclick="eksekusiUpdatePWA()" class="bg-white text-indigo-600 font-black px-8 py-3 rounded-xl text-xs uppercase tracking-widest shadow-xl hover:bg-gray-100 hover:scale-105 active:scale-95 transition-all shrink-0 w-full md:w-auto">Update Sekarang</button>
+    `;
+    document.body.appendChild(banner);
+    // Munculkan spanduk dengan efek meluncur dari atas
+    setTimeout(() => banner.classList.remove('-translate-y-full'), 1000);
+}
+
+window.eksekusiUpdatePWA = function() {
+    const btn = document.querySelector('#pwaUpdateBanner button');
+    if(btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Menginstal...'; btn.disabled = true; }
+    // Kirim sinyal rahasia ke sw.js untuk langsung mengeksekusi sistem baru!
+    if (newWorker) newWorker.postMessage('SKIP_WAITING');
+}
