@@ -1836,14 +1836,14 @@ function bukaScannerGlobal(target) {
         if (!directQrCode) directQrCode = new Html5Qrcode("reader");
         
         if (!isCameraRunning) {
-            // REVISI SUPER: Paksa Kamera Buka di Resolusi HD (1080p) agar garis rapat terbaca super tajam
-            const setKameraHD = { 
-                facingMode: "environment", 
-                width: { ideal: 1920 },
-                height: { ideal: 1080 }
-            };
-
-            directQrCode.start(setKameraHD, { fps: 15 }, (text) => {
+            // REVISI AMAN: Resolusi HD 720p yang didukung semua tipe HP (Anti Blank Putih)
+            directQrCode.start(
+                { facingMode: "environment" }, 
+                { 
+                    fps: 15, 
+                    videoConstraints: { width: { ideal: 1280 }, height: { ideal: 720 } } 
+                }, 
+                (text) => {
                 
                 let cleanText = text;
                 // Proteksi Khusus di Menu Input Barang Baru (Tolak jika bukan IMEI angka 15 digit)
