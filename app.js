@@ -344,8 +344,9 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
 });
 
 // =========================================================================================
-// 5. SCANNER BARCODE UNIVERSAL & PELACAKAN IMEI (REVISI KAMERA BESAR & TOMBOL MANUAL)
+// 5. SCANNER BARCODE UNIVERSAL & PELACAKAN IMEI (REVISI ZOOM & FOKUS IMEI)
 // =========================================================================================
+let directQrCode = null; let isCameraRunning = false;
 function bukaScannerGlobal(target) { 
     targetScannerGlobal = target; const modal = document.getElementById('modalScanner'); modal.classList.remove('hidden'); 
     
@@ -358,17 +359,53 @@ function bukaScannerGlobal(target) {
         if (!directQrCode) directQrCode = new Html5Qrcode("reader");
         
         if (!isCameraRunning) {
-            // Hilangkan kotak pembatas kecil (qrbox) agar layar full video
-            directQrCode.start({ facingMode: "environment" }, { fps: 10, aspectRatio: 1.0 }, (text) => {
-                if(isCameraRunning) { onScanSuccessGlobal(text); }
+            // REVISI: Tambahkan kotak bidik laser pipih (qrbox) agar fokus ke IMEI panjang
+            directQrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: { width: 320, height: 80 } }, (text) => {
+                
+                // Proteksi jika targetnya IMEI (Agar tidak salah baca SN/Barcode pabrik yang pendek)
+                let cleanText = text;
+                if(target === 'inputIMEI' || target === 'inputLacakIMEI') {
+                   let rawAngka = text.replace(/[^0-9]/g, '');
+                   // Filter canggih: Jika terbaca campur aduk angka & huruf, paksa comot 15 digit angka IMEI-nya saja
+                   if(rawAngka.length >= 15) {
+                       cleanText = rawAngka.slice(0, 15); 
+                   } else if (text.length < 10) {
+                       // Abaikan dan tembak ulang jika yang terbaca cuma barcode pendek (6 digit)
+                       return;
+                   }
+                }
+                
+                if(isCameraRunning) { onScanSuccessGlobal(cleanText); }
             }, undefined).then(() => { 
                 isCameraRunning = true; 
                 
-                // Tambahkan tombol jepret manual jika belum ada
+                // Tambahkan Slider Zoom UI
                 const readerDiv = document.getElementById('reader');
-                if(readerDiv && !document.getElementById('btnJepretManual')) {
-                    const btnHtml = `<button id="btnJepretManual" onclick="alert('Tekan ini saat Barcode/IMEI sudah jelas di layar, lalu dekatkan sedikit lagi.')" class="absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white font-black px-6 py-3 rounded-full shadow-[0_0_20px_rgba(79,70,229,0.8)] border-2 border-white z-50 uppercase tracking-widest"><i class="fa-solid fa-camera mr-2"></i> Fokus & Scan!</button>`;
-                    readerDiv.parentElement.insertAdjacentHTML('beforeend', btnHtml);
+                if(readerDiv && !document.getElementById('zoomUI')) {
+                    const uiHtml = `
+                    <div id="zoomUI" class="absolute bottom-5 left-0 w-full px-6 flex flex-col items-center z-50">
+                        <label class="text-white font-black text-xs uppercase tracking-widest mb-2 drop-shadow-lg"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Zoom Kamera</label>
+                        <input type="range" id="zoomSliderScanner" min="1" max="5" step="0.1" value="1" class="w-full max-w-sm h-2 bg-indigo-500 rounded-lg appearance-none cursor-pointer shadow-lg outline-none">
+                        <p class="text-white text-[9px] font-bold mt-3 text-center bg-black/60 px-3 py-1.5 rounded-lg border border-white/20">Arahkan kotak bidik ke Barcode. Geser tuas Zoom jika teks terlalu kecil.</p>
+                    </div>`;
+                    readerDiv.parentElement.insertAdjacentHTML('beforeend', uiHtml);
+                    
+                    // Logika Eksekusi Lensa Zoom (Support Android & iPhone API)
+                    const slider = document.getElementById('zoomSliderScanner');
+                    slider.addEventListener('input', (e) => {
+                        const video = document.querySelector('#reader video');
+                        if(video && video.srcObject) {
+                            const track = video.srcObject.getVideoTracks()[0];
+                            const caps = track.getCapabilities();
+                            if(caps.zoom) {
+                                track.applyConstraints({ advanced: [{ zoom: e.target.value }] });
+                            } else {
+                                // Fallback CSS Zoom jika lensa HP jadul / dilarang browser
+                                video.style.transform = `scale(${e.target.value})`;
+                                video.style.transformOrigin = 'center center';
+                            }
+                        }
+                    });
                 }
             }).catch((err) => { showToast("Izin Kamera Ditolak / Tidak Ditemukan!", "error"); });
         }
@@ -377,8 +414,8 @@ function bukaScannerGlobal(target) {
 function tutupScannerBarcode() { 
     const modal = document.getElementById('modalScanner'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.add('hidden'); }, 300); 
     if (directQrCode && isCameraRunning) { directQrCode.stop().then(() => { isCameraRunning = false; }).catch(e=>{}); } 
-    // Hapus tombol jepret saat modal ditutup
-    const btnM = document.getElementById('btnJepretManual'); if(btnM) btnM.remove();
+    // Bersihkan UI Zoom
+    const ui = document.getElementById('zoomUI'); if(ui) ui.remove();
 }
 function onScanSuccessGlobal(decodedText) { 
     tutupScannerBarcode(); 
