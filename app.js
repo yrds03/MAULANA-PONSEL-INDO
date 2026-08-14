@@ -669,11 +669,38 @@ function renderSupplier(data, tbody) {
     }); 
 }
 
+// MODAL KONFIRMASI CUSTOM (MENCEGAH LINK DOMAIN BOCOR)
+window.customConfirm = function(msg, callback) {
+    const modalHtml = `
+    <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 transform scale-95 transition-transform duration-300 text-center">
+            <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-5 text-rose-500 text-4xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-black text-xl text-gray-800 mb-2">Konfirmasi</h3>
+            <p class="text-sm text-gray-500 font-medium mb-8 leading-relaxed">${msg}</p>
+            <div class="flex gap-3">
+                <button onclick="tutupCustomConfirm()" class="flex-1 py-3.5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors uppercase tracking-widest text-[10px]">Batal</button>
+                <button id="btnConfirmYes" class="flex-1 py-3.5 rounded-xl font-black text-white bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/30 transition-colors uppercase tracking-widest text-[10px]">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const m = document.getElementById('customConfirmModal');
+    setTimeout(() => { m.classList.remove('opacity-0'); m.children[0].classList.remove('scale-95'); }, 10);
+    
+    document.getElementById('btnConfirmYes').onclick = () => { tutupCustomConfirm(); callback(); };
+};
+window.tutupCustomConfirm = function() {
+    const m = document.getElementById('customConfirmModal');
+    if(m) { m.classList.add('opacity-0'); m.children[0].classList.add('scale-95'); setTimeout(() => m.remove(), 300); }
+};
+
 window.hapusBarangDariKatalog = function(id) {
-    if(confirm("Yakin ingin mengarsipkan barang ini dari etalase? (Data histori lama tidak akan terhapus)")) {
+    customConfirm("Yakin ingin mengarsipkan barang ini dari etalase? <br>(Histori lama tetap aman)", () => {
         kirimUpdate('Barang', id, 'Dihapus');
         setTimeout(() => { muatTabelBarang(); muatKatalogBarang(); }, 1500);
-    }
+    });
 }
 
 window.cetakLabelService = function(nota, nama, tipe, imei, kendala) {
@@ -1140,9 +1167,9 @@ function renderUser(data, tbody) {
 }
 
 window.hapusUser = function(id) {
-    if(confirm("PERINGATAN: Karyawan ini tidak akan bisa login lagi ke sistem. Lanjutkan?")) {
+    customConfirm("PERINGATAN: Karyawan ini tidak akan bisa login lagi ke sistem. Lanjutkan?", () => {
         kirimUpdate('User Login', id, 'Dihapus');
-    }
+    });
 }
 
 window.bukaModalEditUser = function(id, username, rolesStr) {
@@ -1755,6 +1782,40 @@ function downloadExcel(tableId, filename) {
     document.body.appendChild(a); a.click(); 
     setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 100); 
     showToast("File Excel berhasil dirapikan & di-download!", "success"); 
+}
+
+// KHUSUS: Membuat lembar kertas ceklis opname yang bersih dari element form input
+window.downloadLembarOpnameKertas = function() {
+    if (dataOpnameAktif.length === 0) {
+        return showToast("Klik 'Mulai Audit Hari Ini' dulu untuk memuat data!", "error");
+    }
+
+    let tgl = new Date().toLocaleDateString('id-ID');
+    let htmlClean = `<table border="1" style="border-collapse:collapse; width:100%; font-family:sans-serif; font-size:12px;">`;
+    htmlClean += `<tr><th colspan="6" style="text-align:left; font-size:16px; padding:10px;">LEMBAR CEKLIS STOK OPNAME - TANGGAL: ${tgl}</th></tr>`;
+    htmlClean += `<tr><th style="padding:5px;">SKU / KODE BARANG</th><th style="padding:5px;">IMEI / SN</th><th style="padding:5px;">NAMA BARANG</th><th style="padding:5px;">STOK SISTEM</th><th style="padding:5px;">[ ] FISIK NYATA</th><th style="padding:5px;">CATATAN KARYAWAN</th></tr>`;
+    
+    dataOpnameAktif.forEach(b => {
+        let imeiText = (b.imei && b.imei !== '-') ? b.imei : '-';
+        htmlClean += `<tr>`;
+        htmlClean += `<td style="padding:5px;mso-number-format:'\@';">${b.sku}</td>`;
+        htmlClean += `<td style="padding:5px; font-family:monospace; font-weight:bold; mso-number-format:'\@';">${imeiText}</td>`;
+        htmlClean += `<td style="padding:5px;">${b.namaBarang}</td>`;
+        htmlClean += `<td style="padding:5px; text-align:center;"><b>${b.stok}</b></td>`;
+        htmlClean += `<td style="padding:5px; text-align:center; width:100px;"></td>`; 
+        htmlClean += `<td style="padding:5px; width:200px;"></td>`;
+        htmlClean += `</tr>`;
+    });
+    
+    htmlClean += `</table>`;
+    
+    let dataFormat = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"></head><body>${htmlClean}</body></html>`; 
+    let blob = new Blob(['\ufeff', dataFormat], { type: 'application/vnd.ms-excel' }); 
+    let url = URL.createObjectURL(blob); let a = document.createElement("a"); a.href = url; 
+    a.download = "Kertas_Ceklis_Opname_" + tgl.replace(/\//g, '-') + ".xls"; 
+    document.body.appendChild(a); a.click(); 
+    setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 100); 
+    showToast("Kertas Ceklis Opname berhasil didownload!", "success"); 
 }
 
 // =========================================================================================
