@@ -344,23 +344,41 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
 });
 
 // =========================================================================================
-// 5. SCANNER BARCODE UNIVERSAL & PELACAKAN IMEI
+// 5. SCANNER BARCODE UNIVERSAL & PELACAKAN IMEI (REVISI KAMERA BESAR & TOMBOL MANUAL)
 // =========================================================================================
 function bukaScannerGlobal(target) { 
     targetScannerGlobal = target; const modal = document.getElementById('modalScanner'); modal.classList.remove('hidden'); 
+    
+    // Perbesar area modal scanner di layar
+    const modalContent = document.getElementById('modalScannerContent');
+    if(modalContent) { modalContent.classList.remove('max-w-md'); modalContent.classList.add('max-w-3xl'); modalContent.style.height = '85vh'; }
+    
     setTimeout(() => { 
         modal.classList.remove('opacity-0'); 
         if (!directQrCode) directQrCode = new Html5Qrcode("reader");
+        
         if (!isCameraRunning) {
-            directQrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: { width: 280, height: 60 } }, (text) => {
+            // Hilangkan kotak pembatas kecil (qrbox) agar layar full video
+            directQrCode.start({ facingMode: "environment" }, { fps: 10, aspectRatio: 1.0 }, (text) => {
                 if(isCameraRunning) { onScanSuccessGlobal(text); }
-            }, undefined).then(() => { isCameraRunning = true; }).catch((err) => { showToast("Izin Kamera Ditolak / Tidak Ditemukan!", "error"); });
+            }, undefined).then(() => { 
+                isCameraRunning = true; 
+                
+                // Tambahkan tombol jepret manual jika belum ada
+                const readerDiv = document.getElementById('reader');
+                if(readerDiv && !document.getElementById('btnJepretManual')) {
+                    const btnHtml = `<button id="btnJepretManual" onclick="alert('Tekan ini saat Barcode/IMEI sudah jelas di layar, lalu dekatkan sedikit lagi.')" class="absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white font-black px-6 py-3 rounded-full shadow-[0_0_20px_rgba(79,70,229,0.8)] border-2 border-white z-50 uppercase tracking-widest"><i class="fa-solid fa-camera mr-2"></i> Fokus & Scan!</button>`;
+                    readerDiv.parentElement.insertAdjacentHTML('beforeend', btnHtml);
+                }
+            }).catch((err) => { showToast("Izin Kamera Ditolak / Tidak Ditemukan!", "error"); });
         }
     }, 100); 
 }
 function tutupScannerBarcode() { 
     const modal = document.getElementById('modalScanner'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.add('hidden'); }, 300); 
     if (directQrCode && isCameraRunning) { directQrCode.stop().then(() => { isCameraRunning = false; }).catch(e=>{}); } 
+    // Hapus tombol jepret saat modal ditutup
+    const btnM = document.getElementById('btnJepretManual'); if(btnM) btnM.remove();
 }
 function onScanSuccessGlobal(decodedText) { 
     tutupScannerBarcode(); 
@@ -1691,6 +1709,53 @@ async function muatTabelAbsensi() {
 
 // Eksekusi Instan saat Aplikasi Dimuat
 checkSession();
+
+// =========================================================================================
+// FUNGSI DOWNLOAD EXCEL (REVISI: MURNI CSV UNTUK KOLOM RAPI)
+// =========================================================================================
+function downloadExcel(tableId, filename) { 
+    let table = document.getElementById(tableId); 
+    if (!table) return showToast("Tabel tidak ditemukan", "error"); 
+    
+    let csvContent = "";
+    let rows = table.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+        if(row.style.display === 'none') return;
+        let rowData = [];
+        let isThead = row.parentNode.tagName === 'THEAD';
+        let cells = row.querySelectorAll('th, td');
+        
+        cells.forEach((cell, index) => {
+            let headerText = '';
+            if(!isThead) {
+                let th = table.querySelector(`thead th:nth-child(${index + 1})`);
+                if(th) headerText = th.innerText.toLowerCase();
+            } else {
+                headerText = cell.innerText.toLowerCase();
+            }
+            
+            // Otomatis buang kolom tabel "Aksi" atau "Tindakan"
+            if(headerText.includes('aksi') || headerText.includes('print') || headerText.includes('tindakan')) return;
+            
+            // Bersihkan teks: hilangkan baris baru, ganti koma dengan titik (untuk uang)
+            let cellText = cell.innerText.trim()
+                .replace(/\n/g, ' - ') // Jadikan spasi agar tak merusak CSV
+                .replace(/"/g, '""'); // Escape tanda kutip ganda
+                
+            rowData.push('"' + cellText + '"'); // Bungkus setiap sel dengan kutip agar aman
+        });
+        // Gunakan Titik Koma (;) agar langsung terpisah per kolom di Excel Indonesia
+        csvContent += rowData.join(";") + "\n";
+    });
+
+    let blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' }); 
+    let url = URL.createObjectURL(blob); let a = document.createElement("a"); a.href = url; 
+    a.download = filename + "_" + new Date().toLocaleDateString('id-ID').replace(/\//g, '-') + ".csv"; 
+    document.body.appendChild(a); a.click(); 
+    setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 100); 
+    showToast("File Excel berhasil dirapikan & di-download!", "success"); 
+}
 
 // =========================================================================================
 // 14. SANSTECH PWA UPDATE NOTIFIER (DETEKSI VERSI BARU OTOMATIS)
