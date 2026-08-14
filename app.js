@@ -1734,6 +1734,30 @@ async function muatTabelAbsensi() {
     } catch(e) {}
 }
 
+window.approveAbsenKaryawan = async function(id, status) { 
+    showToast("Memproses Approval...", "success"); 
+    try { 
+        const res = await fetch(API_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ 
+                action: 'approve_absen', 
+                token: localStorage.getItem('pos_token'), 
+                id: id, 
+                status: status 
+            }) 
+        }); 
+        const result = await res.json();
+        if(result.status) {
+            showToast("Pengajuan berhasil di-" + status + "!", "success"); 
+            muatTabelAbsensi(); 
+        } else {
+            showToast(result.message, "error");
+        }
+    } catch(e) { 
+        showToast("Gagal mengirim ke server", "error"); 
+    } 
+};
+
 // Eksekusi Instan saat Aplikasi Dimuat
 checkSession();
 
