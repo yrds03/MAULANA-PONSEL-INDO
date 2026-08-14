@@ -89,6 +89,33 @@ function showToast(message, type = 'success') {
     setTimeout(() => { toast.classList.remove('translate-y-0', 'opacity-100'); toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
 }
 
+// MODAL KONFIRMASI CUSTOM (MENCEGAH LINK DOMAIN BOCOR SAAT HAPUS DATA)
+window.customConfirm = function(msg, callback) {
+    const modalHtml = `
+    <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 transform scale-95 transition-transform duration-300 text-center">
+            <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-5 text-rose-500 text-4xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-black text-xl text-gray-800 mb-2">Konfirmasi</h3>
+            <p class="text-sm text-gray-500 font-medium mb-8 leading-relaxed">${msg}</p>
+            <div class="flex gap-3">
+                <button onclick="tutupCustomConfirm()" class="flex-1 py-3.5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors uppercase tracking-widest text-[10px]">Batal</button>
+                <button id="btnConfirmYes" class="flex-1 py-3.5 rounded-xl font-black text-white bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/30 transition-colors uppercase tracking-widest text-[10px]">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const m = document.getElementById('customConfirmModal');
+    setTimeout(() => { m.classList.remove('opacity-0'); m.children[0].classList.remove('scale-95'); }, 10);
+    
+    document.getElementById('btnConfirmYes').onclick = () => { tutupCustomConfirm(); callback(); };
+};
+window.tutupCustomConfirm = function() {
+    const m = document.getElementById('customConfirmModal');
+    if(m) { m.classList.add('opacity-0'); m.children[0].classList.add('scale-95'); setTimeout(() => m.remove(), 300); }
+};
+
 // =========================================================================================
 // 2. KONEKSI PRINTER
 // =========================================================================================
@@ -346,7 +373,6 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
 // =========================================================================================
 // 5. SCANNER BARCODE UNIVERSAL & PELACAKAN IMEI (REVISI ZOOM & FOKUS IMEI)
 // =========================================================================================
-let directQrCode = null; let isCameraRunning = false;
 function bukaScannerGlobal(target) { 
     targetScannerGlobal = target; const modal = document.getElementById('modalScanner'); modal.classList.remove('hidden'); 
     
@@ -1229,7 +1255,7 @@ window.bukaModalEditUser = function(id, username, rolesStr) {
                 <label class="flex items-center gap-2 text-xs font-bold text-gray-700"><input type="checkbox" value="Kas" class="w-4 h-4 text-indigo-600" ${roles.includes('Kas')?'checked':''}> Buku Kas</label>
                 <label class="flex items-center gap-2 text-xs font-bold text-gray-700"><input type="checkbox" value="Pengeluaran" class="w-4 h-4 text-indigo-600" ${roles.includes('Pengeluaran')?'checked':''}> Pengeluaran</label>
                 <label class="flex items-center gap-2 text-xs font-bold text-gray-700"><input type="checkbox" value="Piutang" class="w-4 h-4 text-indigo-600" ${roles.includes('Piutang')?'checked':''}> Piutang</label>
-                <label class="flex items-center gap-2 text-xs font-bold text-rose-600"><input type="checkbox" value="Laporan" class="w-4 h-4 text-rose-600" ${roles.includes('Laporan')?'checked':''}> Laporan Laba</label>
+                <label class="flex items-center gap-2 text-xs font-bold text-rose-600"><input type="checkbox" value="Laporan" class="w-4 h-4 text-rose-600" ${roles.includes('Laporan')?'checked':''}> Laporan Laba/Omzet</label>
             </div>
             <input type="password" id="editUsrPass" placeholder="Password Baru (Kosongkan jika tidak diubah)" class="w-full px-5 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-sm mt-3">
             <button onclick="kirimUpdateUser('${id}')" class="w-full bg-slate-900 text-white font-black text-lg py-4 rounded-xl shadow-xl hover:bg-black transition-colors mt-2">Simpan Perubahan</button>
@@ -1726,7 +1752,7 @@ async function muatTabelAbsensi() {
                 return matchBulan && matchTahun;
             });
             
-            let data = filteredData.slice(0, 500); // Tampilkan 500 data untuk di-export Excel
+            let data = filteredData.slice(0, 500); 
             let adaData = false;
             const role = localStorage.getItem('pos_role') || ''; const uname = localStorage.getItem('pos_username') || ''; 
             const isOwner = role.toLowerCase().includes('admin') || role.toLowerCase().includes('owner') || uname.toLowerCase() === 'owner' || role === '';
@@ -1795,8 +1821,90 @@ window.approveAbsenKaryawan = async function(id, status) {
     } 
 };
 
-// Eksekusi Instan saat Aplikasi Dimuat
-checkSession();
+// =========================================================================================
+// 5. SCANNER BARCODE UNIVERSAL & PELACAKAN IMEI (REVISI ZOOM & FOKUS IMEI)
+// =========================================================================================
+function bukaScannerGlobal(target) { 
+    targetScannerGlobal = target; const modal = document.getElementById('modalScanner'); modal.classList.remove('hidden'); 
+    
+    // Perbesar area modal scanner di layar
+    const modalContent = document.getElementById('modalScannerContent');
+    if(modalContent) { modalContent.classList.remove('max-w-md'); modalContent.classList.add('max-w-3xl'); modalContent.style.height = '85vh'; }
+    
+    setTimeout(() => { 
+        modal.classList.remove('opacity-0'); 
+        if (!directQrCode) directQrCode = new Html5Qrcode("reader");
+        
+        if (!isCameraRunning) {
+            // REVISI: Tambahkan kotak bidik laser pipih (qrbox) agar fokus ke IMEI panjang
+            directQrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: { width: 320, height: 80 } }, (text) => {
+                
+                // Proteksi jika targetnya IMEI (Agar tidak salah baca SN/Barcode pabrik yang pendek)
+                let cleanText = text;
+                if(target === 'inputIMEI' || target === 'inputLacakIMEI') {
+                   let rawAngka = text.replace(/[^0-9]/g, '');
+                   // Filter canggih: Jika terbaca campur aduk angka & huruf, paksa comot 15 digit angka IMEI-nya saja
+                   if(rawAngka.length >= 15) {
+                       cleanText = rawAngka.slice(0, 15); 
+                   } else if (text.length < 10) {
+                       // Abaikan dan tembak ulang jika yang terbaca cuma barcode pendek (6 digit)
+                       return;
+                   }
+                }
+                
+                if(isCameraRunning) { onScanSuccessGlobal(cleanText); }
+            }, undefined).then(() => { 
+                isCameraRunning = true; 
+                
+                // Tambahkan Slider Zoom UI
+                const readerDiv = document.getElementById('reader');
+                if(readerDiv && !document.getElementById('zoomUI')) {
+                    const uiHtml = `
+                    <div id="zoomUI" class="absolute bottom-5 left-0 w-full px-6 flex flex-col items-center z-50">
+                        <label class="text-white font-black text-xs uppercase tracking-widest mb-2 drop-shadow-lg"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Zoom Kamera</label>
+                        <input type="range" id="zoomSliderScanner" min="1" max="5" step="0.1" value="1" class="w-full max-w-sm h-2 bg-indigo-500 rounded-lg appearance-none cursor-pointer shadow-lg outline-none">
+                        <p class="text-white text-[9px] font-bold mt-3 text-center bg-black/60 px-3 py-1.5 rounded-lg border border-white/20">Arahkan kotak bidik ke Barcode. Geser tuas Zoom jika teks terlalu kecil.</p>
+                    </div>`;
+                    readerDiv.parentElement.insertAdjacentHTML('beforeend', uiHtml);
+                    
+                    // Logika Eksekusi Lensa Zoom (Support Android & iPhone API)
+                    const slider = document.getElementById('zoomSliderScanner');
+                    slider.addEventListener('input', (e) => {
+                        const video = document.querySelector('#reader video');
+                        if(video && video.srcObject) {
+                            const track = video.srcObject.getVideoTracks()[0];
+                            const caps = track.getCapabilities();
+                            if(caps.zoom) {
+                                track.applyConstraints({ advanced: [{ zoom: e.target.value }] });
+                            } else {
+                                // Fallback CSS Zoom jika lensa HP jadul / dilarang browser
+                                video.style.transform = `scale(${e.target.value})`;
+                                video.style.transformOrigin = 'center center';
+                            }
+                        }
+                    });
+                }
+            }).catch((err) => { showToast("Izin Kamera Ditolak / Tidak Ditemukan!", "error"); });
+        }
+    }, 100); 
+}
+function tutupScannerBarcode() { 
+    const modal = document.getElementById('modalScanner'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.add('hidden'); }, 300); 
+    if (directQrCode && isCameraRunning) { directQrCode.stop().then(() => { isCameraRunning = false; }).catch(e=>{}); } 
+    // Bersihkan UI Zoom
+    const ui = document.getElementById('zoomUI'); if(ui) ui.remove();
+}
+function onScanSuccessGlobal(decodedText) { 
+    tutupScannerBarcode(); 
+    showToast("Barcode terbaca!", "success");
+    if (targetScannerGlobal === 'cart') {
+        let item = katalogBarang.find(b => b.sku.toLowerCase() === decodedText.toLowerCase() || (b.imei && b.imei.toLowerCase() === decodedText.toLowerCase())); 
+        if (item) tambahKeKeranjang(item.idBarang); else showToast(`Barang tidak ditemukan di katalog`, "error"); 
+    } else {
+        let el = document.getElementById(targetScannerGlobal);
+        if (el) el.value = decodedText;
+    }
+}
 
 // =========================================================================================
 // FUNGSI DOWNLOAD EXCEL (REVISI: MURNI CSV UNTUK KOLOM RAPI)
@@ -1878,6 +1986,9 @@ window.downloadLembarOpnameKertas = function() {
     setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 100); 
     showToast("Kertas Ceklis Opname berhasil didownload!", "success"); 
 }
+
+// Eksekusi Instan saat Aplikasi Dimuat
+checkSession();
 
 // =========================================================================================
 // 14. SANSTECH PWA UPDATE NOTIFIER (DETEKSI VERSI BARU OTOMATIS)
