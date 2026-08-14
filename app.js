@@ -557,8 +557,9 @@ function cetakLabelBarcode(sku, namaBarang, hargaJual, spek, imei) {
     
     lblSpecs.innerHTML = `<div style="font-size: 9px; font-weight: 900; letter-spacing: 0.2px; margin-bottom: 1px;">${sku}</div>${spekClean}${imeiClean}`;
 
-    // REVISI: Pertebal garis barcode (width: 1.6) agar jelas dipindai kamera
-    JsBarcode("#lblBarcode", sku, { format: "CODE128", width: 1.6, height: 40, displayValue: false, margin: 0 }); 
+    // REVISI SUPER: Jadikan IMEI sebagai Barcode (Jika ada). Kalau Aksesoris (tanpa IMEI), baru pakai SKU.
+    let targetBarcode = (imei && imei !== '-') ? imei : sku;
+    JsBarcode("#lblBarcode", targetBarcode, { format: "CODE128", width: 1.6, height: 40, displayValue: false, margin: 0 }); 
     
     const printArea = document.getElementById('printLabelArea'); document.body.classList.add('print-barcode'); printArea.style.opacity = '1'; printArea.style.zIndex = '9999';
     setTimeout(() => { window.print(); document.body.classList.remove('print-barcode'); printArea.style.opacity = '0'; printArea.style.zIndex = '-999'; }, 500); 
@@ -1836,14 +1837,8 @@ function bukaScannerGlobal(target) {
         if (!directQrCode) directQrCode = new Html5Qrcode("reader");
         
         if (!isCameraRunning) {
-            // REVISI AMAN: Resolusi HD 720p yang didukung semua tipe HP (Anti Blank Putih)
-            directQrCode.start(
-                { facingMode: "environment" }, 
-                { 
-                    fps: 15, 
-                    videoConstraints: { width: { ideal: 1280 }, height: { ideal: 720 } } 
-                }, 
-                (text) => {
+            // REVISI: Kembali ke settingan standar bawaan pabrik agar kamera TIDAK BLANK PUTIH
+            directQrCode.start({ facingMode: "environment" }, { fps: 15 }, (text) => {
                 
                 let cleanText = text;
                 // Proteksi Khusus di Menu Input Barang Baru (Tolak jika bukan IMEI angka 15 digit)
