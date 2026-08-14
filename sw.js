@@ -1,4 +1,4 @@
-const CACHE_NAME = 'maulana-pos-v45';
+const CACHE_NAME = 'maulana-pos-v46';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
