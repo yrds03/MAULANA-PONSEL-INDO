@@ -557,7 +557,8 @@ function cetakLabelBarcode(sku, namaBarang, hargaJual, spek, imei) {
     
     lblSpecs.innerHTML = `<div style="font-size: 9px; font-weight: 900; letter-spacing: 0.2px; margin-bottom: 1px;">${sku}</div>${spekClean}${imeiClean}`;
 
-    JsBarcode("#lblBarcode", sku, { format: "CODE128", width: 1.2, height: 25, displayValue: false, margin: 0 }); 
+    // REVISI: Pertebal garis barcode (width: 1.6) agar jelas dipindai kamera
+    JsBarcode("#lblBarcode", sku, { format: "CODE128", width: 1.6, height: 40, displayValue: false, margin: 0 }); 
     
     const printArea = document.getElementById('printLabelArea'); document.body.classList.add('print-barcode'); printArea.style.opacity = '1'; printArea.style.zIndex = '9999';
     setTimeout(() => { window.print(); document.body.classList.remove('print-barcode'); printArea.style.opacity = '0'; printArea.style.zIndex = '-999'; }, 500); 
@@ -1827,7 +1828,6 @@ window.approveAbsenKaryawan = async function(id, status) {
 function bukaScannerGlobal(target) { 
     targetScannerGlobal = target; const modal = document.getElementById('modalScanner'); modal.classList.remove('hidden'); 
     
-    // Perbesar area modal scanner di layar
     const modalContent = document.getElementById('modalScannerContent');
     if(modalContent) { modalContent.classList.remove('max-w-md'); modalContent.classList.add('max-w-3xl'); modalContent.style.height = '85vh'; }
     
@@ -1836,19 +1836,17 @@ function bukaScannerGlobal(target) {
         if (!directQrCode) directQrCode = new Html5Qrcode("reader");
         
         if (!isCameraRunning) {
-            // REVISI: Tambahkan kotak bidik laser pipih (qrbox) agar fokus ke IMEI panjang
-            directQrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: { width: 320, height: 80 } }, (text) => {
+            // Resolusi Layar Penuh (Tanpa kotak) agar SKU panjang terbaca sempurna
+            directQrCode.start({ facingMode: "environment" }, { fps: 15 }, (text) => {
                 
-                // Proteksi jika targetnya IMEI (Agar tidak salah baca SN/Barcode pabrik yang pendek)
                 let cleanText = text;
+                // Proteksi Khusus di Menu Input Barang Baru (Tolak jika bukan IMEI angka 15 digit)
                 if(target === 'inputIMEI') {
                    let rawAngka = text.replace(/[^0-9]/g, '');
-                   // Filter canggih: Jika terbaca campur aduk angka & huruf, paksa comot 15 digit angka IMEI-nya saja
                    if(rawAngka.length >= 15) {
                        cleanText = rawAngka.slice(0, 15); 
                    } else if (text.length < 10) {
-                       // Abaikan dan tembak ulang jika yang terbaca cuma barcode pendek (6 digit)
-                       return;
+                       return; // Abaikan pantulan barcode lain yang bukan IMEI
                    }
                 }
                 
@@ -1856,18 +1854,18 @@ function bukaScannerGlobal(target) {
             }, undefined).then(() => { 
                 isCameraRunning = true; 
                 
-                // Tambahkan Slider Zoom UI
+                // Tambahkan Tuas Slider Zoom
                 const readerDiv = document.getElementById('reader');
                 if(readerDiv && !document.getElementById('zoomUI')) {
                     const uiHtml = `
                     <div id="zoomUI" class="absolute bottom-5 left-0 w-full px-6 flex flex-col items-center z-50">
                         <label class="text-white font-black text-xs uppercase tracking-widest mb-2 drop-shadow-lg"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Zoom Kamera</label>
                         <input type="range" id="zoomSliderScanner" min="1" max="5" step="0.1" value="1" class="w-full max-w-sm h-2 bg-indigo-500 rounded-lg appearance-none cursor-pointer shadow-lg outline-none">
-                        <p class="text-white text-[9px] font-bold mt-3 text-center bg-black/60 px-3 py-1.5 rounded-lg border border-white/20">Arahkan kotak bidik ke Barcode. Geser tuas Zoom jika teks terlalu kecil.</p>
+                        <p class="text-white text-[9px] font-bold mt-3 text-center bg-black/60 px-3 py-1.5 rounded-lg border border-white/20">Arahkan lensa ke Barcode. Geser tuas Zoom jika teks terlalu kecil.</p>
                     </div>`;
                     readerDiv.parentElement.insertAdjacentHTML('beforeend', uiHtml);
                     
-                    // Logika Eksekusi Lensa Zoom (Support Android & iPhone API)
+                    // Eksekusi Hardware Lensa Kamera HP
                     const slider = document.getElementById('zoomSliderScanner');
                     slider.addEventListener('input', (e) => {
                         const video = document.querySelector('#reader video');
@@ -1877,7 +1875,7 @@ function bukaScannerGlobal(target) {
                             if(caps.zoom) {
                                 track.applyConstraints({ advanced: [{ zoom: e.target.value }] });
                             } else {
-                                // Fallback CSS Zoom jika lensa HP jadul / dilarang browser
+                                // Fallback CSS Zoom jika API Lensa dilarang browser
                                 video.style.transform = `scale(${e.target.value})`;
                                 video.style.transformOrigin = 'center center';
                             }
@@ -1891,7 +1889,7 @@ function bukaScannerGlobal(target) {
 function tutupScannerBarcode() { 
     const modal = document.getElementById('modalScanner'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.add('hidden'); }, 300); 
     if (directQrCode && isCameraRunning) { directQrCode.stop().then(() => { isCameraRunning = false; }).catch(e=>{}); } 
-    // Bersihkan UI Zoom
+    // Bersihkan UI Tuas Zoom saat ditutup
     const ui = document.getElementById('zoomUI'); if(ui) ui.remove();
 }
 function onScanSuccessGlobal(decodedText) { 
