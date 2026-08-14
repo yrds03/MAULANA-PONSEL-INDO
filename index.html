@@ -26,10 +26,10 @@
             body.print-nota #printArea, body.print-nota #printArea * { visibility: visible; } 
             body.print-nota #printArea { position: absolute; left: 0; top: 0; width: 58mm; opacity: 1; margin: 0; padding: 2mm; font-family: 'Courier New', Courier, monospace; font-size: 12px; color: black; display: block; } 
             body.print-barcode #printLabelArea, body.print-barcode #printLabelArea * { visibility: visible; }
-            body.print-barcode #printLabelArea { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); opacity: 1; width: 50mm; height: 30mm; margin: 0; padding: 2mm; font-family: sans-serif; color: black; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: white; }
-            #printLabelArea svg { max-width: 100%; max-height: 15mm; margin: 2px 0; }
-            #printLabelArea .label-title { font-size: 10px; font-weight: bold; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-            #printLabelArea .label-price { font-size: 12px; font-weight: 900; margin: 0; }
+            body.print-barcode #printLabelArea { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); opacity: 1; width: 50mm; height: 30mm; margin: 0; padding: 1.5mm; font-family: sans-serif; color: black; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: white; box-sizing: border-box; overflow: hidden; }
+            #printLabelArea svg { width: 95%; max-height: 7mm; margin: 1px 0; flex-shrink: 0; }
+            #printLabelArea .label-title { font-size: 11px; font-weight: 900; margin: 0 0 1px 0; line-height: 1.1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; max-width: 100%; flex-shrink: 0; }
+            #printLabelArea .label-price { font-size: 12px; font-weight: 900; margin: 1px 0 0 0; flex-shrink: 0; }
             body.print-service #printLabelServiceArea, body.print-service #printLabelServiceArea * { visibility: visible; }
             body.print-service #printLabelServiceArea { position: absolute; left: 0; top: 0; width: 58mm; opacity: 1; margin: 0; padding: 2mm; font-family: sans-serif; font-size: 10px; color: black; display: block; background: white; }
             body.print-service .service-ticket { border: 1px dashed black; padding: 5px; margin-bottom: 5px; }
@@ -99,10 +99,10 @@
                     <button onclick="toggleMobileCart()" id="mobileCartBtn" class="md:hidden fixed bottom-6 right-6 bg-indigo-600 text-white p-4 rounded-full shadow-2xl z-40 transform active:scale-90 transition-transform"><i class="fa-solid fa-cart-shopping text-xl"></i><span id="mobileCartBadge" class="absolute -top-2 -right-2 bg-rose-500 text-white text-xs font-bold px-2 py-1 rounded-full border-2 border-white shadow-md">0</span></button>
                     
                     <div id="cartPanel" class="fixed inset-y-0 right-0 w-full md:w-[500px] bg-white shadow-2xl md:shadow-none z-50 transform translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col md:relative z-20">
-                        <!-- HEADER (Dikecilkan) -->
+                        <!-- HEADER -->
                         <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-white shrink-0"><h3 class="font-black text-gray-800 text-lg flex items-center gap-3"><div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600"><i class="fa-solid fa-basket-shopping"></i></div>Pesanan Aktif</h3><div class="flex items-center gap-3"><span class="bg-indigo-50 text-indigo-700 text-xs font-extrabold px-3 py-1 rounded-full" id="cartBadge">0 Item</span><button onclick="toggleMobileCart()" class="md:hidden text-gray-400 hover:text-red-500 text-2xl bg-gray-50 w-8 h-8 rounded-full"><i class="fa-solid fa-xmark"></i></button></div></div>
                         
-                        <!-- FORM PELANGGAN (Dikecilkan space-nya) -->
+                        <!-- FORM PELANGGAN -->
                         <div class="p-4 bg-slate-50/50 border-b border-gray-100 space-y-3 shadow-inner shrink-0">
                             <div class="flex gap-2 relative group">
                                 <div class="relative flex-1">
@@ -118,10 +118,10 @@
                             </div>
                         </div>
 
-                        <!-- LIST ITEM (Diberi ruang selebar mungkin) -->
+                        <!-- LIST ITEM -->
                         <div class="flex-1 overflow-y-auto p-4 bg-white custom-scrollbar relative" id="cartList"></div>
                         
-                        <!-- PANEL BAWAH (Dimampatkan marginnya) -->
+                        <!-- PANEL BAWAH -->
                         <div class="p-4 bg-slate-50 border-t border-gray-200 relative z-10 shrink-0">
                             <div class="flex gap-2 mb-2">
                                 <div class="relative w-1/2">
@@ -148,6 +148,61 @@
                             </div>
 
                             <button id="btnCheckout" class="w-full bg-slate-900 text-white font-black text-lg py-3.5 rounded-xl shadow-xl hover:bg-black flex justify-center items-center gap-3 transform active:scale-[0.98] transition-all"><i class="fa-solid fa-print"></i> BAYAR & CETAK</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MENU 2: LAPORAN & ANALITIK -->
+                <div id="menu-laporan" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 custom-scrollbar">
+                    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 gap-4 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                        <div><h2 class="text-2xl font-black text-gray-800">Laporan & Analitik</h2><p class="text-sm text-gray-500 font-medium mt-1">Pantau arus kas, laba, dan performa kasir Anda.</p></div>
+                        <div class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
+                            <select id="filterTanggalLaporan" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"><option value="Semua">Semua Tgl</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>
+                            <select id="filterBulanLaporan" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"><option value="Semua">Semua Bulan</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select>
+                            <select id="filterTahunLaporan" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"><option value="Semua">Semua Thn</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option><option value="2036">2036</option><option value="2037">2037</option><option value="2038">2038</option><option value="2039">2039</option><option value="2040">2040</option><option value="2041">2041</option></select>
+                            <button onclick="muatLaporan()" class="bg-indigo-600 text-white px-5 py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-700 flex items-center justify-center gap-2"><i class="fa-solid fa-filter"></i> Filter</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100"><div class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2"><i class="fa-solid fa-receipt mr-1"></i> Total Transaksi</div><div class="text-3xl font-black text-slate-800" id="lapTransaksi">0</div></div>
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-indigo-100"><div class="text-indigo-400 text-[10px] font-black uppercase tracking-widest mb-2"><i class="fa-solid fa-wallet mr-1"></i> Omzet Masuk</div><div class="text-2xl font-black text-indigo-600 truncate" id="lapOmzet">Rp 0</div></div>
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-rose-100"><div class="text-rose-400 text-[10px] font-black uppercase tracking-widest mb-2"><i class="fa-solid fa-money-bill-transfer mr-1"></i> Pengeluaran Kas</div><div class="text-2xl font-black text-rose-500 truncate" id="lapPengeluaran">Rp 0</div></div>
+                        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-3xl shadow-lg shadow-emerald-500/20 text-white"><div class="text-emerald-100 text-[10px] font-black uppercase tracking-widest mb-2"><i class="fa-solid fa-chart-line mr-1"></i> Estimasi Laba Bersih</div><div class="text-2xl font-black truncate" id="lapLaba">Rp 0</div></div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-[300px]"><h3 class="font-black text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-indigo-500"></i> Grafik Omzet vs Pengeluaran</h3><div class="flex-1 relative w-full"><canvas id="chartPenjualan"></canvas></div></div>
+                        <div class="lg:col-span-1 bg-gradient-to-b from-amber-50 to-white p-6 rounded-3xl shadow-sm border border-amber-100 flex flex-col h-[300px] overflow-hidden"><h3 class="font-black text-amber-600 mb-4 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-500"></i> Performa Kasir (KPI)</h3><div class="overflow-y-auto flex-1 custom-scrollbar"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="text-amber-700/60 font-black uppercase text-[10px] tracking-widest border-b border-amber-100 sticky top-0 bg-amber-50"><tr><th class="py-2">Nama Kasir</th><th class="py-2 text-center">Nota</th><th class="py-2 text-right">Omzet Jual</th></tr></thead><tbody id="tabelLeaderboardBody" class="divide-y divide-amber-50 text-gray-800 font-bold"></tbody></table></div></div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                        <div class="lg:col-span-2 bg-white p-0 rounded-3xl shadow-sm border border-gray-100 flex flex-col min-h-[400px] overflow-hidden"><div class="p-5 border-b border-gray-100 flex justify-between items-center bg-indigo-50/50"><h3 class="font-black text-indigo-800 flex items-center gap-2"><i class="fa-solid fa-arrow-down-short-wide text-indigo-500"></i> Rincian Uang Masuk (Transaksi)</h3><button onclick="downloadExcel('tabelLapDetail', 'Rincian_Pemasukan')" class="text-indigo-600 bg-white border border-indigo-100 hover:bg-indigo-500 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black tracking-widest uppercase transition-all shadow-sm">Excel</button></div><div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar"><table id="tabelLapDetail" class="w-full text-left text-sm whitespace-nowrap"><thead class="text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 bg-white sticky top-0 z-10"><tr><th class="py-3 px-5">Tgl</th><th class="py-3 px-5">Kasir/Nota</th><th class="py-3 px-5">Metode</th><th class="py-3 px-5 text-right">Omzet</th><th class="py-3 px-5 text-right">Laba</th></tr></thead><tbody id="tabelLapDetailBody" class="divide-y divide-gray-50 text-gray-700 font-semibold"></tbody></table></div></div>
+                        <div class="lg:col-span-1 bg-white p-0 rounded-3xl shadow-sm border border-gray-100 flex flex-col min-h-[400px] overflow-hidden"><div class="p-5 border-b border-gray-100 flex justify-between items-center bg-rose-50/50"><h3 class="font-black text-rose-800 flex items-center gap-2"><i class="fa-solid fa-arrow-up-right-dots text-rose-500"></i> Uang Keluar (Kas)</h3><button onclick="downloadExcel('tabelLapPengeluaran', 'Rincian_Pengeluaran')" class="text-rose-600 bg-white border border-rose-100 hover:bg-rose-500 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black tracking-widest uppercase transition-all shadow-sm">Excel</button></div><div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar"><table id="tabelLapPengeluaran" class="w-full text-left text-sm whitespace-nowrap"><thead class="text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 bg-white sticky top-0 z-10"><tr><th class="py-3 px-5">Kategori</th><th class="py-3 px-5">Ket</th><th class="py-3 px-5 text-right">Nominal</th></tr></thead><tbody id="tabelLapPengeluaranBody" class="divide-y divide-gray-50 text-gray-700 font-semibold"></tbody></table></div></div>
+                    </div>
+                </div>
+
+                <!-- MENU 3: RIWAYAT PENJUALAN -->
+                <div id="menu-riwayat" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col gap-6">
+                    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center bg-white p-6 rounded-3xl shadow-sm border border-gray-100 gap-4">
+                        <div>
+                            <h2 class="text-2xl font-black text-gray-800">Riwayat Penjualan</h2>
+                            <p class="text-sm text-gray-500 font-medium mt-1">Cek rincian barang yang dibeli per nota atau cetak ulang struk.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
+                            <select id="filterTglRiwayat" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-xs"><option value="Semua">Tgl (Semua)</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>
+                            <select id="filterBlnRiwayat" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-xs"><option value="Semua">Bulan (Semua)</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select>
+                            <select id="filterThnRiwayat" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-xs"><option value="Semua">Thn (Semua)</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option><option value="2036">2036</option><option value="2037">2037</option><option value="2038">2038</option><option value="2039">2039</option><option value="2040">2040</option><option value="2041">2041</option></select>
+                            <button onclick="muatTabelRiwayat()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors shadow-sm"><i class="fa-solid fa-filter"></i> Filter</button>
+                            <button onclick="bukaModalLacak()" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-black transition-colors shadow-sm ml-2"><i class="fa-solid fa-satellite-dish"></i> Lacak IMEI</button>
+                            <button onclick="downloadExcel('tabelRiwayatData', 'Database_Penjualan')" class="bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-500 hover:text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm"><i class="fa-solid fa-file-excel mr-1"></i> Excel</button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex-1 flex flex-col">
+                        <div class="overflow-x-auto flex-1 p-2 custom-scrollbar">
+                            <table id="tabelRiwayatData" class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-slate-50 text-slate-400 font-black uppercase tracking-widest text-[10px] border-b border-gray-100 sticky top-0 z-10">
+                                    <tr><th class="py-5 px-6">Tgl Transaksi</th><th class="py-5 px-6">No Nota</th><th class="py-5 px-6">Pelanggan</th><th class="py-5 px-6">Metode</th><th class="py-5 px-6 text-right">Total Transaksi</th><th class="py-5 px-6 text-center">Aksi & Rincian</th></tr>
+                                </thead>
+                                <tbody id="tabelRiwayatBody" class="text-gray-700 divide-y divide-gray-50 font-medium"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -206,9 +261,211 @@
                     </div>
                 </div>
 
-                <!-- MODUL 3: BUKU KAS & MODAL (LAYOUT ENTERPRISE) -->
-                <div id="menu-kas" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col gap-6 custom-scrollbar">
+                <!-- MENU 5: RETUR SUPPLIER -->
+                <div id="menu-retur" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8">
+                    <div class="w-full xl:w-1/3 shrink-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit">
+                        <h2 class="text-2xl font-black text-gray-800 mb-6">Retur ke Supplier</h2>
+                        <form id="formRetur" class="space-y-4">
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Pilih Supplier</label><select id="returSupplier" required class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none"><option value="">-- Pilih Supplier --</option></select></div>
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">SKU / Barang yang Diretur</label><select id="returSKU" required class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none"><option value="">-- Pilih Barang --</option></select></div>
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Alasan Retur (Minus/Rusak)</label><input type="text" id="returAlasan" placeholder="Contoh: Layar bergaris..." required class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none"></div>
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Tuntutan / Aksi</label><select id="returAksi" required class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-amber-50 text-amber-900 focus:ring-2 focus:ring-indigo-500 outline-none"><option value="Refund Uang (Kembali Kas)">Refund Uang (Tarik Modal ke Kas)</option><option value="Tukar Unit Baru">Tukar Unit Baru (Menunggu)</option></select></div>
+                            <p class="text-[10px] text-gray-500 font-bold bg-gray-50 p-3 rounded-xl border border-gray-200 mb-2"><i class="fa-solid fa-circle-info mr-1"></i> Memproses ini akan otomatis <b>mengurangi -1 stok Gudang</b> Anda.</p>
+                            <button type="submit" id="btnSubmitRetur" class="w-full bg-slate-900 text-white font-black text-sm py-4 rounded-xl shadow-lg hover:bg-black transition-colors uppercase tracking-widest mt-2">Kirim Barang Retur</button>
+                        </form>
+                    </div>
+                    <div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full overflow-hidden">
+                        <div class="flex justify-between items-center mb-6"><h3 class="font-black text-gray-800 text-xl">Riwayat Retur Supplier</h3><button onclick="downloadExcel('tabelReturData', 'Riwayat_Retur')" class="bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-500 hover:text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm"><i class="fa-solid fa-file-excel mr-1"></i> Excel</button></div>
+                        <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar border border-gray-100 rounded-2xl shadow-inner"><table id="tabelReturData" class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-50 text-slate-400 font-black uppercase tracking-widest text-[10px] border-b border-gray-100 sticky top-0 z-10"><tr><th class="py-4 px-6">Tanggal</th><th class="py-4 px-6">Nama Supplier</th><th class="py-4 px-6">SKU Barang</th><th class="py-4 px-6">Aksi & Alasan</th></tr></thead><tbody id="tabelReturBody" class="text-gray-700 font-medium divide-y divide-gray-50"></tbody></table></div>
+                    </div>
+                </div>
+
+                <!-- MENU 6: MASTER BARANG / KATALOG -->
+                <div id="menu-barang" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        <h2 class="text-3xl font-black text-gray-800">Master Data Barang</h2>
+                        <button onclick="bukaModalBarang()" class="w-full md:w-auto bg-slate-900 text-white px-8 py-3.5 rounded-2xl font-bold shadow-xl flex items-center justify-center gap-3 hover:bg-black transition-all active:scale-95"><i class="fa-solid fa-plus"></i> Input Barang Baru</button>
+                    </div>
                     
+                    <!-- FITUR BARU: TAB & FILTER KATALOG -->
+                    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-4 gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <div class="flex bg-slate-100 p-1 rounded-xl w-full xl:w-auto">
+                            <button id="tab-katalog-Tersedia" onclick="switchTabKatalog('Tersedia')" class="tab-katalog flex-1 px-6 py-2.5 rounded-lg font-black text-xs uppercase tracking-widest bg-indigo-600 text-white shadow-lg transition-all">Tersedia</button>
+                            <button id="tab-katalog-Habis" onclick="switchTabKatalog('Habis')" class="tab-katalog flex-1 px-6 py-2.5 rounded-lg font-bold text-xs uppercase tracking-widest bg-white text-gray-500 hover:bg-gray-50 transition-all">Habis</button>
+                            <button id="tab-katalog-Arsip" onclick="switchTabKatalog('Arsip')" class="tab-katalog flex-1 px-6 py-2.5 rounded-lg font-bold text-xs uppercase tracking-widest bg-white text-gray-500 hover:bg-gray-50 transition-all">Dihapus</button>
+                        </div>
+                        <input type="hidden" id="statusFilterBarang" value="Tersedia">
+                        
+                        <div class="flex items-center gap-2 w-full xl:w-auto">
+                            <select id="filterBulanBarang" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-xs">
+                                <option value="Semua">Bulan (Semua)</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                            </select>
+                            <select id="filterTahunBarang" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-xs">
+                                <option value="Semua">Thn (Semua)</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option>
+                            </select>
+                            <button onclick="muatTabelBarang()" class="bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors shadow-sm"><i class="fa-solid fa-filter"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex-1 flex flex-col">
+                        <div class="p-6 border-b border-gray-100 flex gap-4 bg-slate-50/50">
+                            <div class="relative flex-1"><i class="fa-solid fa-magnifying-glass absolute left-5 top-4 text-gray-400"></i><input type="text" id="cariTabelBarang" placeholder="Cari Kode SKU, Nama Barang, atau IMEI..." class="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold shadow-sm"></div>
+                            <button onclick="muatTabelBarang()" class="bg-white border border-gray-200 text-slate-600 px-6 py-3.5 rounded-xl font-bold hover:bg-gray-50 shadow-sm"><i class="fa-solid fa-rotate"></i></button>
+                        </div>
+                        <div class="overflow-x-auto overflow-y-auto flex-1 p-2 custom-scrollbar"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="text-slate-400 font-black uppercase tracking-widest text-[10px] border-b border-gray-100 sticky top-0 bg-white z-10"><tr><th class="py-5 px-6">SKU / Kode</th><th class="py-5 px-6">Identitas Perangkat</th><th class="py-5 px-6 text-right">Harga Jual</th><th class="py-5 px-6 text-center">Stok</th><th class="py-5 px-6 text-center">Label & Aksi</th></tr></thead><tbody id="tabelBarangBody" class="divide-y divide-gray-50"></tbody></table></div>
+                    </div>
+                </div>
+
+                <!-- MENU 7: RESTOCK (MUTASI MASUK GUDANG) -->
+                <div id="menu-restock" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8">
+                    <div class="w-full xl:w-1/3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit border-t-4 border-t-indigo-500">
+                        <h3 class="font-black text-gray-800 mb-2 text-xl">Mutasi Masuk Gudang</h3>
+                        <p class="text-xs text-gray-500 mb-6 font-medium leading-relaxed">Wajib diisi setiap ada pembelian stok dari Supplier atau tambahan aset lain agar riwayat modal tercatat.</p>
+                        <form id="formRestock" class="space-y-5">
+                            <div><select id="rstSKU" required class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 font-bold focus:ring-2 focus:ring-indigo-500 outline-none"><option value="">-- Pilih Barang dari Katalog --</option></select></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="number" id="rstQty" required placeholder="Qty Masuk" min="1" class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-indigo-50 font-black text-indigo-600">
+                                <div class="col-span-1">
+                                    <input type="text" inputmode="numeric" id="rstHarga" required placeholder="Total Uang Keluar (Rp)" class="input-rupiah w-full px-5 py-4 border border-rose-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none bg-rose-50 font-black text-rose-600 shadow-sm">
+                                    <p class="text-[9px] font-black text-rose-500 uppercase tracking-widest mt-2 leading-tight"><i class="fa-solid fa-triangle-exclamation"></i> Memotong Kas Operasional!</p>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <input type="text" id="rstSupplier" list="listSupplier" required placeholder="Ketik/Pilih Nama Supplier" class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white shadow-sm font-bold transition-all">
+                                <datalist id="listSupplier"></datalist>
+                            </div>
+                            <button type="submit" id="btnSubmitRestock" class="w-full bg-indigo-600 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-indigo-700 transition-all text-lg mt-2">Simpan Stok Masuk</button>
+                        </form>
+                    </div>
+                    <div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-black text-gray-800 text-xl">Riwayat Pemasukan Aset Gudang</h3>
+                            <button onclick="muatTabelRestock()" class="text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-4 py-2.5 rounded-xl font-bold transition-all"><i class="fa-solid fa-rotate"></i></button>
+                        </div>
+                        <div class="overflow-x-auto overflow-y-auto flex-1 border border-gray-100 rounded-2xl shadow-inner custom-scrollbar">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 sticky top-0 z-10">
+                                    <tr><th class="py-4 px-6">Tgl Masuk</th><th class="py-4 px-6">SKU / Nama Barang</th><th class="py-4 px-6 text-center">Qty (Pcs)</th><th class="py-4 px-6">Sumber / Supplier</th></tr>
+                                </thead>
+                                <tbody id="tabelRestockBody" class="divide-y divide-gray-50 text-gray-700 font-semibold"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODUL 8: STOK OPNAME -->
+                <div id="menu-opname" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col gap-8">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                        <div>
+                            <h2 class="text-2xl font-black text-gray-800">Stok Opname (Tutup Toko)</h2>
+                            <p class="text-sm text-gray-500 font-medium mt-1">Audit fisik barang. Jika ada selisih, sistem akan memotong database otomatis.</p>
+                        </div>
+                        <button onclick="mulaiOpname()" id="btnMulaiOpname" class="bg-emerald-500 text-white px-6 py-3 rounded-xl font-black shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-all flex items-center gap-2"><i class="fa-solid fa-clipboard-check"></i> Mulai Audit Hari Ini</button>
+                    </div>
+                    
+                    <div class="flex flex-col xl:flex-row gap-8 flex-1 overflow-hidden">
+                        <div class="flex-[2] bg-white p-0 rounded-3xl shadow-sm border border-gray-100 flex flex-col overflow-hidden relative">
+                            <div class="p-6 border-b border-gray-100 bg-emerald-50/30 flex justify-between items-center z-10 relative flex-wrap gap-3">
+                                <div class="flex items-center gap-4">
+                                    <h3 class="font-black text-emerald-800 text-lg"><i class="fa-solid fa-list-ol mr-2 text-emerald-500"></i> Lembar Kerja Opname</h3>
+                                    <button onclick="downloadLembarOpnameKertas()" class="bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm hover:bg-emerald-600 transition-colors"><i class="fa-solid fa-print mr-1"></i> Kertas Ceklis</button>
+                                </div>
+                                <div class="relative w-full md:w-64"><i class="fa-solid fa-magnifying-glass absolute left-4 top-3 text-emerald-400"></i><input type="text" id="cariOpname" oninput="filterTableOpname()" placeholder="Cari Barang..." class="w-full pl-10 pr-3 py-2 bg-white border border-emerald-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold text-emerald-800 shadow-sm"></div>
+                            </div>
+                            <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar p-2 relative z-0">
+                                <table id="tabelLembarOpname" class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 bg-white sticky top-0 z-10">
+                                        <tr><th class="py-4 px-4">SKU / Barang</th><th class="py-4 px-4 text-center">Stok Sistem</th><th class="py-4 px-4 text-center">Fisik Nyata</th><th class="py-4 px-4 text-center">Selisih</th><th class="py-4 px-4">Kondisi / Keterangan</th></tr>
+                                    </thead>
+                                    <tbody id="tabelInputOpname" class="divide-y divide-gray-50">
+                                        <tr><td colspan="5" class="text-center py-10 font-bold text-gray-400 uppercase tracking-widest text-xs">Klik "Mulai Audit Hari Ini" untuk membuka lembar kerja</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="p-6 border-t border-gray-100 bg-white relative z-10">
+                                <button id="btnSubmitOpname" onclick="simpanOpname()" class="w-full bg-slate-900 text-white font-black text-lg py-4.5 rounded-2xl shadow-xl hover:bg-black transition-all flex items-center justify-center gap-3 disabled:opacity-50" disabled><i class="fa-solid fa-cloud-arrow-up"></i> Terapkan Audit & Update Database</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="font-black text-gray-800 text-lg">Histori Selisih Audit</h3>
+                                <button onclick="muatTabelOpnameHistory()" class="text-gray-400 hover:text-indigo-600 bg-gray-50 hover:bg-indigo-50 px-3 py-2 rounded-lg font-bold transition-all"><i class="fa-solid fa-rotate"></i></button>
+                            </div>
+                            <div class="overflow-x-auto overflow-y-auto flex-1 border border-gray-100 rounded-2xl shadow-inner custom-scrollbar">
+                                <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                    <thead class="bg-slate-50 text-slate-400 font-black uppercase tracking-widest border-b border-gray-100 sticky top-0 z-10">
+                                        <tr><th class="py-3 px-4">Tgl</th><th class="py-3 px-4">Barang</th><th class="py-3 px-4 text-center">Sls</th><th class="py-3 px-4">Ket</th></tr>
+                                    </thead>
+                                    <tbody id="tabelHistoryOpname" class="divide-y divide-gray-50 font-medium"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MENU 9: PELANGGAN (CRM) -->
+                <div id="menu-pelanggan" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8">
+                    <div class="w-full xl:w-1/3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit">
+                        <h3 class="font-black text-gray-800 mb-6 text-xl">Tambah Pelanggan Baru</h3>
+                        <form id="formPelanggan" class="space-y-4">
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Nama Lengkap</label><input type="text" id="pelNama" required placeholder="Contoh: Budi Santoso" class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-black text-gray-800 bg-gray-50"></div>
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">No. WhatsApp</label><input type="number" id="pelWA" required placeholder="Contoh: 0812345678" class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-gray-800 bg-gray-50"></div>
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Alamat (Opsional)</label><textarea id="pelAlamat" placeholder="Alamat lengkap pengiriman/tagihan..." class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-gray-700 bg-gray-50 h-24 resize-none"></textarea></div>
+                            <button type="submit" id="btnSubmitPelanggan" class="w-full bg-slate-900 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-black transition-colors text-lg mt-2">Simpan Database</button>
+                        </form>
+                    </div>
+                    <div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full overflow-hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-black text-gray-800 text-xl">Database Pelanggan</h3>
+                            <button onclick="window.muatTabelPelanggan()" class="text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-4 py-2.5 rounded-xl font-bold transition-all"><i class="fa-solid fa-rotate"></i></button>
+                        </div>
+                        <div class="overflow-x-auto overflow-y-auto flex-1 border border-gray-100 rounded-2xl shadow-inner custom-scrollbar">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 sticky top-0 z-10">
+                                    <tr><th class="py-4 px-6">Nama Pelanggan</th><th class="py-4 px-6">WhatsApp</th><th class="py-4 px-6">Alamat</th></tr>
+                                </thead>
+                                <tbody id="tabelPelangganBody" class="divide-y divide-gray-50 font-medium"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MENU 10: SUPPLIER -->
+                <div id="menu-supplier" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8">
+                    <div class="w-full xl:w-1/3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit">
+                        <h3 class="font-black text-gray-800 mb-6 text-xl">Tambah Pemasok (Supplier)</h3>
+                        <form id="formSupplier" class="space-y-4">
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Nama Perusahaan / Toko</label><input type="text" id="supNama" required placeholder="Contoh: PT. Bintang Jaya" class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-black text-gray-800 bg-gray-50"></div>
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Nama Penanggung Jawab (PIC)</label><input type="text" id="supPIC" required placeholder="Contoh: Pak Andi" class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-gray-800 bg-gray-50"></div>
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">No. WhatsApp</label><input type="number" id="supWA" required placeholder="Contoh: 0812345678" class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-gray-800 bg-gray-50"></div>
+                            <div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Kategori Supply</label>
+                            <select id="supKategori" class="w-full px-5 py-4 border border-gray-200 rounded-xl font-bold bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700 shadow-sm">
+                                <option value="Handphone">Handphone / Tablet</option>
+                                <option value="Aksesoris">Aksesoris (Softcase, Charger, dll)</option>
+                                <option value="Sparepart">Sparepart Servis (LCD, Baterai, dll)</option>
+                            </select></div>
+                            <button type="submit" id="btnSubmitSupplier" class="w-full bg-slate-900 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-black transition-colors text-lg mt-2">Simpan Pemasok</button>
+                        </form>
+                    </div>
+                    <div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full overflow-hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-black text-gray-800 text-xl">Daftar Rekanan Pemasok</h3>
+                            <button onclick="window.muatTabelSupplier()" class="text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-4 py-2.5 rounded-xl font-bold transition-all"><i class="fa-solid fa-rotate"></i></button>
+                        </div>
+                        <div class="overflow-x-auto overflow-y-auto flex-1 border border-gray-100 rounded-2xl shadow-inner custom-scrollbar">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 sticky top-0 z-10">
+                                    <tr><th class="py-4 px-6">Nama Perusahaan</th><th class="py-4 px-6">PIC & Kontak WA</th><th class="py-4 px-6">Kategori Stok</th></tr>
+                                </thead>
+                                <tbody id="tabelSupplierBody" class="divide-y divide-gray-50 font-medium"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODUL 11: BUKU KAS & MODAL (LAYOUT ENTERPRISE) -->
+                <div id="menu-kas" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col gap-6 custom-scrollbar">
                     <!-- TOP: DASHBOARD NERACA GRID -->
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 shrink-0">
                         <div class="bg-indigo-50 p-6 rounded-3xl border border-indigo-100 shadow-sm flex flex-col justify-center relative overflow-hidden group">
@@ -292,150 +549,148 @@
                     </div>
                 </div>
 
-                <!-- MODUL 4: STOK OPNAME -->
-                <div id="menu-opname" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col gap-8">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                        <div>
-                            <h2 class="text-2xl font-black text-gray-800">Stok Opname (Tutup Toko)</h2>
-                            <p class="text-sm text-gray-500 font-medium mt-1">Audit fisik barang. Jika ada selisih, sistem akan memotong database otomatis.</p>
-                        </div>
-                        <button onclick="mulaiOpname()" id="btnMulaiOpname" class="bg-emerald-500 text-white px-6 py-3 rounded-xl font-black shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-all flex items-center gap-2"><i class="fa-solid fa-clipboard-check"></i> Mulai Audit Hari Ini</button>
+                <!-- MENU 12: KEUANGAN (PENGELUARAN KAS OPERASIONAL) -->
+                <div id="menu-keuangan" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8">
+                    <div class="w-full xl:w-1/3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit">
+                        <h3 class="font-black text-gray-800 mb-6 text-xl">Potong Kas Operasional</h3>
+                        <form id="formPengeluaran" class="space-y-5">
+                            <div class="flex gap-2 items-center">
+                                <select id="kasKategori" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-white font-bold text-gray-700 focus:ring-2 focus:ring-rose-500 outline-none shadow-sm cursor-pointer">
+                                    <option value="Listrik/Air">Listrik / Air / Internet</option>
+                                    <option value="Gaji Karyawan">Gaji Karyawan</option>
+                                    <option value="Operasional">Operasional Harian Toko</option>
+                                    <option value="Beli Aksesoris / Stok Lain">Beli Aksesoris / Barang Non-Etalase</option>
+                                    <option value="Lainnya">Pengeluaran Lain-lain</option>
+                                </select>
+                                <button type="button" onclick="tambahKategoriKasCustom()" class="bg-rose-100 text-rose-600 px-5 h-full rounded-xl font-black hover:bg-rose-500 hover:text-white transition-colors shadow-sm" title="Tambah Kategori Baru"><i class="fa-solid fa-plus text-xl"></i></button>
+                            </div>
+                            <input type="text" inputmode="numeric" id="kasNominal" required placeholder="Nominal Potong (Rp)" class="input-rupiah w-full px-5 py-4 border border-gray-200 rounded-xl bg-rose-50 text-rose-500 font-black focus:ring-2 focus:ring-rose-500 outline-none text-lg">
+                            <div class="relative">
+                                <input type="text" id="kasKet" list="listHistoriKas" required placeholder="Nama Pembelian / Keterangan (Ketik/Pilih)" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-rose-500 outline-none font-bold text-gray-800 transition-all">
+                                <datalist id="listHistoriKas"></datalist>
+                            </div>
+                            <button type="submit" id="btnSubmitKas" class="w-full bg-rose-500 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-rose-600 transition-colors text-lg">Catat Pengeluaran</button>
+                        </form>
                     </div>
-                    
-                    <div class="flex flex-col xl:flex-row gap-8 flex-1 overflow-hidden">
-                        <div class="flex-[2] bg-white p-0 rounded-3xl shadow-sm border border-gray-100 flex flex-col overflow-hidden relative">
-                            <div class="p-6 border-b border-gray-100 bg-emerald-50/30 flex justify-between items-center z-10 relative flex-wrap gap-3">
-                                <div class="flex items-center gap-4">
-                                    <h3 class="font-black text-emerald-800 text-lg"><i class="fa-solid fa-list-ol mr-2 text-emerald-500"></i> Lembar Kerja Opname</h3>
-                                    <button onclick="downloadLembarOpnameKertas()" class="bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm hover:bg-emerald-600 transition-colors"><i class="fa-solid fa-print mr-1"></i> Kertas Ceklis</button>
-                                </div>
-                                <div class="relative w-full md:w-64"><i class="fa-solid fa-magnifying-glass absolute left-4 top-3 text-emerald-400"></i><input type="text" id="cariOpname" oninput="filterTableOpname()" placeholder="Cari Barang..." class="w-full pl-10 pr-3 py-2 bg-white border border-emerald-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold text-emerald-800 shadow-sm"></div>
-                            </div>
-                            <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar p-2 relative z-0">
-                                <table id="tabelLembarOpname" class="w-full text-left text-sm whitespace-nowrap">
-                                    <thead class="text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 bg-white sticky top-0 z-10">
-                                        <tr><th class="py-4 px-4">SKU / Barang</th><th class="py-4 px-4 text-center">Stok Sistem</th><th class="py-4 px-4 text-center">Fisik Nyata</th><th class="py-4 px-4 text-center">Selisih</th><th class="py-4 px-4">Kondisi / Keterangan</th></tr>
-                                    </thead>
-                                    <tbody id="tabelInputOpname" class="divide-y divide-gray-50">
-                                        <tr><td colspan="5" class="text-center py-10 font-bold text-gray-400 uppercase tracking-widest text-xs">Klik "Mulai Audit Hari Ini" untuk membuka lembar kerja</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="p-6 border-t border-gray-100 bg-white relative z-10">
-                                <button id="btnSubmitOpname" onclick="simpanOpname()" class="w-full bg-slate-900 text-white font-black text-lg py-4.5 rounded-2xl shadow-xl hover:bg-black transition-all flex items-center justify-center gap-3 disabled:opacity-50" disabled><i class="fa-solid fa-cloud-arrow-up"></i> Terapkan Audit & Update Database</button>
-                            </div>
+                    <div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-black text-gray-800 text-xl">Arus Kas Keluar</h3>
+                            <button onclick="muatTabelKeuangan()" class="text-rose-600 bg-rose-50 hover:bg-rose-100 px-4 py-2.5 rounded-xl font-bold"><i class="fa-solid fa-rotate"></i></button>
                         </div>
-                        
-                        <div class="flex-1 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="font-black text-gray-800 text-lg">Histori Selisih Audit</h3>
-                                <button onclick="muatTabelOpnameHistory()" class="text-gray-400 hover:text-indigo-600 bg-gray-50 hover:bg-indigo-50 px-3 py-2 rounded-lg font-bold transition-all"><i class="fa-solid fa-rotate"></i></button>
-                            </div>
-                            <div class="overflow-x-auto overflow-y-auto flex-1 border border-gray-100 rounded-2xl shadow-inner custom-scrollbar">
-                                <table class="w-full text-left text-[11px] whitespace-nowrap">
-                                    <thead class="bg-slate-50 text-slate-400 font-black uppercase tracking-widest border-b border-gray-100 sticky top-0 z-10">
-                                        <tr><th class="py-3 px-4">Tgl</th><th class="py-3 px-4">Barang</th><th class="py-3 px-4 text-center">Sls</th><th class="py-3 px-4">Ket</th></tr>
-                                    </thead>
-                                    <tbody id="tabelHistoryOpname" class="divide-y divide-gray-50 font-medium"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KOMPRESI MENU LAINNYA -->
-                <div id="menu-laporan" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 custom-scrollbar"><div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 gap-4 bg-white p-6 rounded-3xl shadow-sm border border-gray-100"><div><h2 class="text-2xl font-black text-gray-800">Laporan & Analitik</h2><p class="text-sm text-gray-500 font-medium mt-1">Pantau arus kas, laba, dan performa kasir Anda.</p></div><div class="flex flex-wrap items-center gap-2 w-full xl:w-auto"><select id="filterTanggalLaporan" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"><option value="Semua">Semua Tgl</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select><select id="filterBulanLaporan" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"><option value="Semua">Semua Bulan</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select><select id="filterTahunLaporan" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"><option value="Semua">Semua Thn</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option><option value="2036">2036</option><option value="2037">2037</option><option value="2038">2038</option><option value="2039">2039</option><option value="2040">2040</option><option value="2041">2041</option></select><button onclick="muatLaporan()" class="bg-indigo-600 text-white px-5 py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-700 flex items-center justify-center gap-2"><i class="fa-solid fa-filter"></i> Filter</button></div></div><div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8"><div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100"><div class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2"><i class="fa-solid fa-receipt mr-1"></i> Total Transaksi</div><div class="text-3xl font-black text-slate-800" id="lapTransaksi">0</div></div><div class="bg-white p-6 rounded-3xl shadow-sm border border-indigo-100"><div class="text-indigo-400 text-[10px] font-black uppercase tracking-widest mb-2"><i class="fa-solid fa-wallet mr-1"></i> Omzet Masuk</div><div class="text-2xl font-black text-indigo-600 truncate" id="lapOmzet">Rp 0</div></div><div class="bg-white p-6 rounded-3xl shadow-sm border border-rose-100"><div class="text-rose-400 text-[10px] font-black uppercase tracking-widest mb-2"><i class="fa-solid fa-money-bill-transfer mr-1"></i> Pengeluaran Kas</div><div class="text-2xl font-black text-rose-500 truncate" id="lapPengeluaran">Rp 0</div></div><div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-3xl shadow-lg shadow-emerald-500/20 text-white"><div class="text-emerald-100 text-[10px] font-black uppercase tracking-widest mb-2"><i class="fa-solid fa-chart-line mr-1"></i> Estimasi Laba Bersih</div><div class="text-2xl font-black truncate" id="lapLaba">Rp 0</div></div></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-[300px]"><h3 class="font-black text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-indigo-500"></i> Grafik Omzet vs Pengeluaran</h3><div class="flex-1 relative w-full"><canvas id="chartPenjualan"></canvas></div></div><div class="lg:col-span-1 bg-gradient-to-b from-amber-50 to-white p-6 rounded-3xl shadow-sm border border-amber-100 flex flex-col h-[300px] overflow-hidden"><h3 class="font-black text-amber-600 mb-4 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-500"></i> Performa Kasir (KPI)</h3><div class="overflow-y-auto flex-1 custom-scrollbar"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="text-amber-700/60 font-black uppercase text-[10px] tracking-widest border-b border-amber-100 sticky top-0 bg-amber-50"><tr><th class="py-2">Nama Kasir</th><th class="py-2 text-center">Nota</th><th class="py-2 text-right">Omzet Jual</th></tr></thead><tbody id="tabelLeaderboardBody" class="divide-y divide-amber-50 text-gray-800 font-bold"></tbody></table></div></div></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6"><div class="lg:col-span-2 bg-white p-0 rounded-3xl shadow-sm border border-gray-100 flex flex-col min-h-[400px] overflow-hidden"><div class="p-5 border-b border-gray-100 flex justify-between items-center bg-indigo-50/50"><h3 class="font-black text-indigo-800 flex items-center gap-2"><i class="fa-solid fa-arrow-down-short-wide text-indigo-500"></i> Rincian Uang Masuk (Transaksi)</h3><button onclick="downloadExcel('tabelLapDetail', 'Rincian_Pemasukan')" class="text-indigo-600 bg-white border border-indigo-100 hover:bg-indigo-500 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black tracking-widest uppercase transition-all shadow-sm">Excel</button></div><div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar"><table id="tabelLapDetail" class="w-full text-left text-sm whitespace-nowrap"><thead class="text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 bg-white sticky top-0 z-10"><tr><th class="py-3 px-5">Tgl</th><th class="py-3 px-5">Kasir/Nota</th><th class="py-3 px-5">Metode</th><th class="py-3 px-5 text-right">Omzet</th><th class="py-3 px-5 text-right">Laba</th></tr></thead><tbody id="tabelLapDetailBody" class="divide-y divide-gray-50 text-gray-700 font-semibold"></tbody></table></div></div><div class="lg:col-span-1 bg-white p-0 rounded-3xl shadow-sm border border-gray-100 flex flex-col min-h-[400px] overflow-hidden"><div class="p-5 border-b border-gray-100 flex justify-between items-center bg-rose-50/50"><h3 class="font-black text-rose-800 flex items-center gap-2"><i class="fa-solid fa-arrow-up-right-dots text-rose-500"></i> Uang Keluar (Kas)</h3><button onclick="downloadExcel('tabelLapPengeluaran', 'Rincian_Pengeluaran')" class="text-rose-600 bg-white border border-rose-100 hover:bg-rose-500 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black tracking-widest uppercase transition-all shadow-sm">Excel</button></div><div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar"><table id="tabelLapPengeluaran" class="w-full text-left text-sm whitespace-nowrap"><thead class="text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 bg-white sticky top-0 z-10"><tr><th class="py-3 px-5">Kategori</th><th class="py-3 px-5">Ket</th><th class="py-3 px-5 text-right">Nominal</th></tr></thead><tbody id="tabelLapPengeluaranBody" class="divide-y divide-gray-50 text-gray-700 font-semibold"></tbody></table></div></div></div>
-
-                    </div>
-                
-                <div id="menu-hrd" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8"><div class="w-full xl:w-1/3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit flex flex-col items-center"><div class="w-full h-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-t-3xl absolute top-0 left-0"></div><h2 class="text-2xl font-black text-gray-800 mb-3 mt-2 w-full text-left">Mesin Absensi</h2><div id="statusAbsenHariIni" class="w-full text-center text-xs font-black uppercase tracking-widest bg-amber-100 text-amber-700 py-3 rounded-xl mb-6 shadow-sm"><i class="fa-solid fa-clock mr-2"></i> Belum Absen Masuk</div><div class="relative w-full aspect-square bg-slate-900 rounded-3xl overflow-hidden mb-6 shadow-inner ring-4 ring-slate-50"><video id="kameraAbsen" autoplay playsinline class="w-full h-full object-cover transform scale-x-[-1] opacity-90"></video><canvas id="canvasAbsen" class="hidden w-full h-full object-cover"></canvas><div id="statusKamera" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/90 text-white backdrop-blur-sm"><i class="fa-solid fa-camera mb-4 text-4xl opacity-50"></i><p class="text-sm font-black tracking-widest uppercase">Menunggu Lensa...</p></div></div><p class="text-gray-500 w-full text-center text-[10px] font-bold bg-slate-50 py-3 rounded-xl shadow-inner border border-gray-100 mb-6 uppercase tracking-widest" id="txtLokasiAbsen"><i class="fa-solid fa-satellite-dish mr-2 animate-pulse"></i> Memindai Satelit GPS...</p><div class="grid grid-cols-2 gap-4 w-full"><button onclick="prosesAbsensiKamera('Masuk')" id="btnAbsenMasuk" disabled class="bg-emerald-500 text-white font-black py-4 rounded-xl shadow-lg disabled:opacity-50 transition-all hover:bg-emerald-600 active:scale-95 text-sm uppercase tracking-wider">Shift Masuk</button><button onclick="prosesAbsensiKamera('Pulang')" id="btnAbsenPulang" disabled class="bg-slate-800 text-white font-black py-4 rounded-xl shadow-lg disabled:opacity-50 transition-all hover:bg-slate-900 active:scale-95 text-sm uppercase tracking-wider">Shift Pulang</button></div></div><div class="flex-1 flex flex-col gap-8"><div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative"><h3 class="font-black text-gray-800 mb-6 text-xl">Form Pengajuan (Izin / Offday)</h3><form id="formPengajuanAbsen" class="space-y-5 relative z-10"><div class="grid grid-cols-1 md:grid-cols-2 gap-5"><select id="ajuJenis" required class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 font-bold focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700"><option value="">-- Pilih Jenis Pengajuan --</option><option value="Izin Keperluan">Izin Keperluan</option><option value="Sakit">Sakit</option><option value="Offday">Offday (Libur)</option><option value="Terlambat">Keterlambatan</option><option value="Lupa Absen">Lupa Absen Shift</option></select><input type="date" id="ajuTanggal" required class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 font-bold focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700"></div><textarea id="ajuKeterangan" required placeholder="Tuliskan keterangan detail..." class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 font-medium focus:ring-2 focus:ring-indigo-500 outline-none h-32 resize-y"></textarea><button type="submit" id="btnSubmitPengajuan" class="w-full md:w-auto px-10 bg-indigo-600 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-indigo-700 transition-colors text-sm uppercase tracking-widest">Kirim Pengajuan ke Owner</button></form></div><div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex-1 flex flex-col min-h-[300px] overflow-hidden"><div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 gap-4"><h3 class="font-black text-gray-800 text-xl">Riwayat Kehadiran & Pengajuan</h3><div class="flex flex-wrap items-center gap-2 w-full xl:w-auto"><select id="filterBulanAbsen" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-xs"><option value="Semua">Bulan (Semua)</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select><select id="filterTahunAbsen" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-xs"><option value="Semua">Thn (Semua)</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option><option value="2036">2036</option><option value="2037">2037</option><option value="2038">2038</option><option value="2039">2039</option><option value="2040">2040</option><option value="2041">2041</option></select><button onclick="muatTabelAbsensi()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors shadow-sm"><i class="fa-solid fa-filter"></i> Filter</button><button onclick="downloadExcel('tabelAbsensiData', 'Log_Absensi_Karyawan')" class="bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase transition-all shadow-sm"><i class="fa-solid fa-file-excel mr-1"></i> Excel</button></div></div><div class="overflow-x-auto overflow-y-auto flex-1 border border-gray-100 rounded-2xl shadow-inner custom-scrollbar"><table id="tabelAbsensiData" class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 sticky top-0 z-10 bg-white"><tr><th class="py-4 px-6">Tanggal/Waktu</th><th class="py-4 px-6">Nama Karyawan</th><th class="py-4 px-6">Aktivitas</th><th class="py-4 px-6">Lokasi/Keterangan</th><th class="py-4 px-6 text-center">Status</th><th class="py-4 px-6 text-center" id="thAksiApproval">Aksi (Owner)</th></tr></thead><tbody id="tabelAbsensiBody" class="divide-y divide-gray-50 font-medium text-gray-700"></tbody></table></div></div></div></div>
-                
-                <div id="menu-riwayat" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col gap-6">
-                    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center bg-white p-6 rounded-3xl shadow-sm border border-gray-100 gap-4">
-                        <div>
-                            <h2 class="text-2xl font-black text-gray-800">Riwayat Penjualan</h2>
-                            <p class="text-sm text-gray-500 font-medium mt-1">Cek rincian barang yang dibeli per nota atau cetak ulang struk.</p>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
-                            <select id="filterTglRiwayat" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-xs"><option value="Semua">Tgl (Semua)</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>
-                            <select id="filterBlnRiwayat" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-xs"><option value="Semua">Bulan (Semua)</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select>
-                            <select id="filterThnRiwayat" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-xs"><option value="Semua">Thn (Semua)</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option><option value="2036">2036</option><option value="2037">2037</option><option value="2038">2038</option><option value="2039">2039</option><option value="2040">2040</option><option value="2041">2041</option></select>
-                            <button onclick="muatTabelRiwayat()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors shadow-sm"><i class="fa-solid fa-filter"></i> Filter</button>
-                            <button onclick="bukaModalLacak()" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-black transition-colors shadow-sm ml-2"><i class="fa-solid fa-satellite-dish"></i> Lacak IMEI</button>
-                            <button onclick="downloadExcel('tabelRiwayatData', 'Database_Penjualan')" class="bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-500 hover:text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm"><i class="fa-solid fa-file-excel mr-1"></i> Excel</button>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex-1 flex flex-col">
-                        <div class="overflow-x-auto flex-1 p-2 custom-scrollbar">
-                            <table id="tabelRiwayatData" class="w-full text-left text-sm whitespace-nowrap">
-                                <thead class="bg-slate-50 text-slate-400 font-black uppercase tracking-widest text-[10px] border-b border-gray-100 sticky top-0 z-10">
-                                    <tr><th class="py-5 px-6">Tgl Transaksi</th><th class="py-5 px-6">No Nota</th><th class="py-5 px-6">Pelanggan</th><th class="py-5 px-6">Metode</th><th class="py-5 px-6 text-right">Total Transaksi</th><th class="py-5 px-6 text-center">Aksi & Rincian</th></tr>
+                        <div class="overflow-x-auto flex-1 border border-gray-100 rounded-2xl shadow-inner">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100">
+                                    <tr><th class="py-4 px-6">Tgl Keluar</th><th class="py-4 px-6">Kategori Akun</th><th class="py-4 px-6">Keterangan Jelas</th><th class="py-4 px-6 text-right">Potongan (Rp)</th></tr>
                                 </thead>
-                                <tbody id="tabelRiwayatBody" class="text-gray-700 divide-y divide-gray-50 font-medium"></tbody>
+                                <tbody id="tabelKeuanganBody" class="divide-y divide-gray-50 font-medium"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div id="menu-retur" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8"><div class="w-full xl:w-1/3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit"><h3 class="font-black text-gray-800 mb-6 text-xl">Form Retur Jual</h3><form id="formRetur" class="space-y-5"><input type="text" id="returNota" required placeholder="No Nota (INV-...)" class="w-full px-5 py-4 border border-gray-200 rounded-xl font-bold bg-gray-50 focus:ring-2 focus:ring-rose-500 outline-none"><div><select id="returSKU" required class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 font-bold focus:ring-2 focus:ring-rose-500 outline-none"><option value="">-- Pilih Barang --</option></select></div><textarea id="returAlasan" required placeholder="Alasan Retur / Kendala" class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none bg-gray-50"></textarea><select id="returAksi" required class="w-full px-5 py-4 border border-gray-200 rounded-xl font-bold focus:ring-2 focus:ring-rose-500 outline-none bg-gray-50"><option value="Tukar Barang Baru">Tukar dengan Barang Baru</option><option value="Refund Uang">Kembalikan Uang (Refund)</option></select><select id="returTujuan" required class="w-full px-5 py-4 border border-gray-200 rounded-xl font-bold focus:ring-2 focus:ring-rose-500 outline-none bg-gray-50 mt-4"><option value="Dari Pelanggan">Retur Dari Pelanggan (Barang Masuk)</option><option value="Ke Supplier">Retur Ke Supplier (Barang Keluar)</option></select><button type="submit" id="btnSubmitRetur" class="w-full bg-rose-500 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-rose-600 transition-all text-lg">Eksekusi Retur</button></form></div><div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col"><div class="flex justify-between items-center mb-6"><h3 class="font-black text-gray-800 text-xl">Riwayat Retur Selesai</h3><button onclick="muatTabelRetur()" class="text-rose-600 bg-rose-50 hover:bg-rose-100 px-4 py-2.5 rounded-xl font-bold transition-all"><i class="fa-solid fa-rotate"></i></button></div><div class="overflow-x-auto flex-1 border border-gray-100 rounded-2xl shadow-inner"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100"><tr><th class="py-4 px-6">Tanggal</th><th class="py-4 px-6">Nota Asli</th><th class="py-4 px-6">SKU / Barang</th><th class="py-4 px-6">Keterangan Retur</th></tr></thead><tbody id="tabelReturBody" class="divide-y divide-gray-50"></tbody></table></div></div></div>
-                <div id="menu-pelanggan" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col md:flex-row gap-8"><div class="w-full md:w-1/3 shrink-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit"><h3 class="font-black text-gray-800 mb-6 text-xl">Data Pelanggan Baru</h3><form id="formPelanggan" class="space-y-5"><input type="text" id="pelNama" required placeholder="Nama Lengkap" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none"><input type="number" id="pelWA" required placeholder="Nomor WhatsApp" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none"><input type="text" id="pelAlamat" placeholder="Alamat (Opsional)" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none"><button type="submit" id="btnSubmitPelanggan" class="w-full bg-slate-900 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-black transition-colors text-lg">Simpan Pelanggan</button></form></div><div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col"><div class="flex justify-between items-center mb-6"><h3 class="font-black text-gray-800 text-xl">Database Pelanggan</h3><button onclick="muatTabelPelanggan()" class="text-slate-600 bg-slate-100 hover:bg-slate-200 px-4 py-2.5 rounded-xl font-bold"><i class="fa-solid fa-rotate"></i></button></div><div class="overflow-x-auto flex-1 border border-gray-100 rounded-2xl shadow-inner"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100"><tr><th class="py-4 px-6">Nama Lengkap</th><th class="py-4 px-6">WhatsApp Aktif</th><th class="py-4 px-6">Alamat Tinggal</th></tr></thead><tbody id="tabelPelangganBody" class="divide-y divide-gray-50 font-medium"></tbody></table></div></div></div>
-                <div id="menu-supplier" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col md:flex-row gap-8"><div class="w-full md:w-1/3 shrink-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit"><h3 class="font-black text-gray-800 mb-6 text-xl">Pendaftaran Supplier</h3><form id="formSupplier" class="space-y-4"><input type="text" id="supNama" required placeholder="Nama Toko / PT / Distributor" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none font-bold"><input type="text" id="supPIC" required placeholder="Nama Sales (PIC)" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none"><input type="number" id="supWA" required placeholder="No. WhatsApp Aktif" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none"><input type="text" id="supKategori" placeholder="Kategori Barang (Opsional)" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none"><button type="submit" id="btnSubmitSupplier" class="w-full bg-slate-900 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-black transition-colors text-lg mt-2">Daftarkan Pemasok</button></form></div><div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col"><div class="flex justify-between items-center mb-6"><h3 class="font-black text-gray-800 text-xl">Daftar Pemasok (Supplier)</h3><button onclick="muatTabelSupplier()" class="text-slate-600 bg-slate-100 hover:bg-slate-200 px-4 py-2.5 rounded-xl font-bold"><i class="fa-solid fa-rotate"></i></button></div><div class="overflow-x-auto flex-1 border border-gray-100 rounded-2xl shadow-inner"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100"><tr><th class="py-4 px-6">Nama Bisnis / PT</th><th class="py-4 px-6">Kontak Sales & WA</th><th class="py-4 px-6">Kategori</th></tr></thead><tbody id="tabelSupplierBody" class="divide-y divide-gray-50 font-medium"></tbody></table></div></div></div>
-                <div id="menu-piutang" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8">
+
+                <!-- MENU 13: BUKU PIUTANG -->
+                <div id="menu-piutang" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col gap-6">
                     <div class="w-full xl:w-1/3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit">
                         <h3 class="font-black text-gray-800 mb-6 text-xl">Catat Tagihan / Kasbon</h3>
                         <form id="formPiutang" class="space-y-5">
-                                    <select id="piutangTipe" required class="w-full px-5 py-4 border border-amber-200 rounded-xl bg-amber-50 font-black focus:ring-2 focus:ring-amber-500 outline-none text-amber-800 shadow-sm cursor-pointer">
-                                        <option value="Piutang Pelanggan">1. Piutang Pelanggan (Kurang Bayar Beli HP)</option>
-                                        <option value="Hutang Toko">2. Hutang Toko (Kita Kasbon/Ngutang ke Supplier)</option>
-                                        <option value="Kasbon Uang">3. Kasbon Karyawan (Pinjam Uang Fisik Laci)</option>
-                                    </select>
-                                    <div class="relative">
-                                        <input type="text" id="piutangNama" list="listPiutangKontak" required placeholder="Ketik/Pilih Nama Pelanggan / Supplier / Karyawan" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-amber-500 outline-none font-bold text-gray-800 transition-all">
-                                        <datalist id="listPiutangKontak"></datalist>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <input type="text" inputmode="numeric" id="piutangTotal" required placeholder="Total Bon (Rp)" class="input-rupiah w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-800 font-black focus:ring-2 focus:ring-amber-500 outline-none shadow-sm">
-                                        <div class="relative">
-                                            <span class="absolute -top-2.5 left-3 bg-white px-2 text-[10px] font-black text-rose-500 uppercase tracking-widest z-10">Tgl Jatuh Tempo</span>
-                                            <input type="date" id="piutangTempo" required class="w-full px-5 py-4 border border-gray-200 rounded-xl font-bold bg-white shadow-sm focus:ring-2 focus:ring-amber-500 outline-none text-gray-600 cursor-pointer relative z-0">
-                                        </div>
-                                    </div>
-                                    <input type="text" id="piutangKet" required placeholder="Keterangan Detail..." class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-amber-500 outline-none font-medium">
-                                    <button type="submit" id="btnSubmitPiutang" class="w-full bg-amber-500 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-amber-600 transition-colors text-lg">Catat ke Buku Piutang</button>
-                                </form>
+                            <select id="piutangTipe" required class="w-full px-5 py-4 border border-amber-200 rounded-xl bg-amber-50 font-black focus:ring-2 focus:ring-amber-500 outline-none text-amber-800 shadow-sm cursor-pointer">
+                                <option value="Piutang Pelanggan">1. Piutang Pelanggan (Kurang Bayar Beli HP)</option>
+                                <option value="Hutang Toko">2. Hutang Toko (Kita Kasbon/Ngutang ke Supplier)</option>
+                                <option value="Kasbon Uang">3. Kasbon Karyawan (Pinjam Uang Fisik Laci)</option>
+                            </select>
+                            <div class="relative">
+                                <input type="text" id="piutangNama" list="listPiutangKontak" required placeholder="Ketik/Pilih Nama Pelanggan / Supplier / Karyawan" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-amber-500 outline-none font-bold text-gray-800 transition-all">
+                                <datalist id="listPiutangKontak"></datalist>
                             </div>
-                            <div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
-                                <div class="flex justify-between items-center mb-6">
-                                    <h3 class="font-black text-gray-800 text-xl">Buku Piutang Berjalan</h3>
-                                    <button onclick="muatTabelPiutang()" class="text-amber-600 bg-amber-50 hover:bg-amber-100 px-4 py-2.5 rounded-xl font-bold"><i class="fa-solid fa-rotate"></i></button>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" inputmode="numeric" id="piutangTotal" required placeholder="Total Bon (Rp)" class="input-rupiah w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-800 font-black focus:ring-2 focus:ring-amber-500 outline-none shadow-sm">
+                                <div class="relative">
+                                    <span class="absolute -top-2.5 left-3 bg-white px-2 text-[10px] font-black text-rose-500 uppercase tracking-widest z-10">Tgl Jatuh Tempo</span>
+                                    <input type="date" id="piutangTempo" required class="w-full px-5 py-4 border border-gray-200 rounded-xl font-bold bg-white shadow-sm focus:ring-2 focus:ring-amber-500 outline-none text-gray-600 cursor-pointer relative z-0">
                                 </div>
-                                <div class="overflow-x-auto flex-1 border border-gray-100 rounded-2xl shadow-inner">
-                                    <table class="w-full text-left text-sm whitespace-nowrap">
-                                        <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100">
-                                            <tr><th class="py-4 px-6">Identitas Tagihan</th><th class="py-4 px-6 text-right">Nominal (Rp)</th><th class="py-4 px-6">Tgl Catat</th><th class="py-4 px-6 text-rose-500">Jatuh Tempo</th><th class="py-4 px-6 text-center">Status</th><th class="py-4 px-6 text-center">Aksi</th></tr>
-                                        </thead>
+                            </div>
+                            <input type="text" id="piutangKet" required placeholder="Keterangan Detail..." class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-amber-500 outline-none font-medium">
+                            <button type="submit" id="btnSubmitPiutang" class="w-full bg-amber-500 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-amber-600 transition-colors text-lg">Catat ke Buku Piutang</button>
+                        </form>
+                    </div>
+                    <div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-black text-gray-800 text-xl">Buku Piutang Berjalan</h3>
+                            <button onclick="muatTabelPiutang()" class="text-amber-600 bg-amber-50 hover:bg-amber-100 px-4 py-2.5 rounded-xl font-bold"><i class="fa-solid fa-rotate"></i></button>
+                        </div>
+                        <div class="overflow-x-auto flex-1 border border-gray-100 rounded-2xl shadow-inner">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100">
+                                    <tr><th class="py-4 px-6">Identitas Tagihan</th><th class="py-4 px-6 text-right">Nominal (Rp)</th><th class="py-4 px-6">Tgl Catat</th><th class="py-4 px-6 text-rose-500">Jatuh Tempo</th><th class="py-4 px-6 text-center">Status</th><th class="py-4 px-6 text-center">Aksi</th></tr>
+                                </thead>
                                 <tbody id="tabelPiutangBody" class="divide-y divide-gray-50 font-medium"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                
-                <!-- MENU KEUANGAN (DITAMBAH OPSI KATEGORI V30) -->
-                <div id="menu-keuangan" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8"><div class="w-full xl:w-1/3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit"><h3 class="font-black text-gray-800 mb-6 text-xl">Potong Kas Operasional</h3><form id="formPengeluaran" class="space-y-5">
-                                    <div class="flex gap-2 items-center">
-                                        <select id="kasKategori" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-white font-bold text-gray-700 focus:ring-2 focus:ring-rose-500 outline-none shadow-sm cursor-pointer">
-                                            <option value="Listrik/Air">Listrik / Air / Internet</option>
-                                            <option value="Gaji Karyawan">Gaji Karyawan</option>
-                                            <option value="Operasional">Operasional Harian Toko</option>
-                                            <option value="Beli Aksesoris / Stok Lain">Beli Aksesoris / Barang Non-Etalase</option>
-                                            <option value="Lainnya">Pengeluaran Lain-lain</option>
-                                        </select>
-                                        <button type="button" onclick="tambahKategoriKasCustom()" class="bg-rose-100 text-rose-600 px-5 h-full rounded-xl font-black hover:bg-rose-500 hover:text-white transition-colors shadow-sm" title="Tambah Kategori Baru"><i class="fa-solid fa-plus text-xl"></i></button>
-                                    </div>
-                                    <input type="text" inputmode="numeric" id="kasNominal" required placeholder="Nominal Potong (Rp)" class="input-rupiah w-full px-5 py-4 border border-gray-200 rounded-xl bg-rose-50 text-rose-500 font-black focus:ring-2 focus:ring-rose-500 outline-none text-lg"><div class="relative">
-                                        <input type="text" id="kasKet" list="listHistoriKas" required placeholder="Nama Pembelian / Keterangan (Ketik/Pilih)" class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-rose-500 outline-none font-bold text-gray-800 transition-all">
-                                        <datalist id="listHistoriKas"></datalist>
-                                    </div><button type="submit" id="btnSubmitKas" class="w-full bg-rose-500 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-rose-600 transition-colors text-lg">Catat Pengeluaran</button></form></div><div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col"><div class="flex justify-between items-center mb-6"><h3 class="font-black text-gray-800 text-xl">Arus Kas Keluar</h3><button onclick="muatTabelKeuangan()" class="text-rose-600 bg-rose-50 hover:bg-rose-100 px-4 py-2.5 rounded-xl font-bold"><i class="fa-solid fa-rotate"></i></button></div><div class="overflow-x-auto flex-1 border border-gray-100 rounded-2xl shadow-inner"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100"><tr><th class="py-4 px-6">Tgl Keluar</th><th class="py-4 px-6">Kategori Akun</th><th class="py-4 px-6">Keterangan Jelas</th><th class="py-4 px-6 text-right">Potongan (Rp)</th></tr></thead><tbody id="tabelKeuanganBody" class="divide-y divide-gray-50 font-medium"></tbody></table></div></div></div>
-                
+
+                <!-- MENU 14: ABSENSI & HRD -->
+                <div id="menu-hrd" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8">
+                    <div class="w-full xl:w-1/3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit flex flex-col items-center">
+                        <div class="w-full h-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-t-3xl absolute top-0 left-0"></div>
+                        <h2 class="text-2xl font-black text-gray-800 mb-3 mt-2 w-full text-left">Mesin Absensi</h2>
+                        <div id="statusAbsenHariIni" class="w-full text-center text-xs font-black uppercase tracking-widest bg-amber-100 text-amber-700 py-3 rounded-xl mb-6 shadow-sm"><i class="fa-solid fa-clock mr-2"></i> Belum Absen Masuk</div>
+                        <div class="relative w-full aspect-square bg-slate-900 rounded-3xl overflow-hidden mb-6 shadow-inner ring-4 ring-slate-50">
+                            <video id="kameraAbsen" autoplay playsinline class="w-full h-full object-cover transform scale-x-[-1] opacity-90"></video>
+                            <canvas id="canvasAbsen" class="hidden w-full h-full object-cover"></canvas>
+                            <div id="statusKamera" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/90 text-white backdrop-blur-sm">
+                                <i class="fa-solid fa-camera mb-4 text-4xl opacity-50"></i>
+                                <p class="text-sm font-black tracking-widest uppercase">Menunggu Lensa...</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 w-full text-center text-[10px] font-bold bg-slate-50 py-3 rounded-xl shadow-inner border border-gray-100 mb-6 uppercase tracking-widest" id="txtLokasiAbsen"><i class="fa-solid fa-satellite-dish mr-2 animate-pulse"></i> Memindai Satelit GPS...</p>
+                        <div class="grid grid-cols-2 gap-4 w-full">
+                            <button onclick="prosesAbsensiKamera('Masuk')" id="btnAbsenMasuk" disabled class="bg-emerald-500 text-white font-black py-4 rounded-xl shadow-lg disabled:opacity-50 transition-all hover:bg-emerald-600 active:scale-95 text-sm uppercase tracking-wider">Shift Masuk</button>
+                            <button onclick="prosesAbsensiKamera('Pulang')" id="btnAbsenPulang" disabled class="bg-slate-800 text-white font-black py-4 rounded-xl shadow-lg disabled:opacity-50 transition-all hover:bg-slate-900 active:scale-95 text-sm uppercase tracking-wider">Shift Pulang</button>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col gap-8">
+                        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative">
+                            <h3 class="font-black text-gray-800 mb-6 text-xl">Form Pengajuan (Izin / Offday)</h3>
+                            <form id="formPengajuanAbsen" class="space-y-5 relative z-10">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <select id="ajuJenis" required class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 font-bold focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700">
+                                        <option value="">-- Pilih Jenis Pengajuan --</option>
+                                        <option value="Izin Keperluan">Izin Keperluan</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Offday">Offday (Libur)</option>
+                                        <option value="Terlambat">Keterlambatan</option>
+                                        <option value="Lupa Absen">Lupa Absen Shift</option>
+                                    </select>
+                                    <input type="date" id="ajuTanggal" required class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 font-bold focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700">
+                                </div>
+                                <textarea id="ajuKeterangan" required placeholder="Tuliskan keterangan detail..." class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 font-medium focus:ring-2 focus:ring-indigo-500 outline-none h-32 resize-y"></textarea>
+                                <button type="submit" id="btnSubmitPengajuan" class="w-full md:w-auto px-10 bg-indigo-600 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-indigo-700 transition-colors text-sm uppercase tracking-widest">Kirim Pengajuan ke Owner</button>
+                            </form>
+                        </div>
+                        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex-1 flex flex-col min-h-[300px] overflow-hidden">
+                            <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 gap-4">
+                                <h3 class="font-black text-gray-800 text-xl">Riwayat Kehadiran & Pengajuan</h3>
+                                <div class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
+                                    <select id="filterBulanAbsen" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-xs"><option value="Semua">Bulan (Semua)</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select>
+                                    <select id="filterTahunAbsen" class="bg-gray-50 border border-gray-200 text-gray-700 font-bold px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-xs"><option value="Semua">Thn (Semua)</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option><option value="2036">2036</option><option value="2037">2037</option><option value="2038">2038</option><option value="2039">2039</option><option value="2040">2040</option><option value="2041">2041</option></select>
+                                    <button onclick="muatTabelAbsensi()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors shadow-sm"><i class="fa-solid fa-filter"></i> Filter</button>
+                                    <button onclick="downloadExcel('tabelAbsensiData', 'Log_Absensi_Karyawan')" class="bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase transition-all shadow-sm"><i class="fa-solid fa-file-excel mr-1"></i> Excel</button>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto overflow-y-auto flex-1 border border-gray-100 rounded-2xl shadow-inner custom-scrollbar">
+                                <table id="tabelAbsensiData" class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 sticky top-0 z-10 bg-white">
+                                        <tr><th class="py-4 px-6">Tanggal/Waktu</th><th class="py-4 px-6">Nama Karyawan</th><th class="py-4 px-6">Aktivitas</th><th class="py-4 px-6">Lokasi/Keterangan</th><th class="py-4 px-6 text-center">Status</th><th class="py-4 px-6 text-center" id="thAksiApproval">Aksi (Owner)</th></tr>
+                                    </thead>
+                                    <tbody id="tabelAbsensiBody" class="divide-y divide-gray-50 font-medium text-gray-700"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MENU 15: PENGATURAN ADMIN -->
                 <div id="menu-pengaturan" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col gap-8">
                     <!-- ATAS: FORM HAK AKSES KARYAWAN & PROFIL TOKO -->
                     <div class="flex flex-col xl:flex-row gap-8">
@@ -461,7 +716,7 @@
                                         <label class="flex items-center gap-3 text-sm font-bold text-gray-700 cursor-pointer"><input type="checkbox" value="Restock" class="w-5 h-5 text-blue-600 rounded"> Mutasi Stok Masuk</label>
                                         <label class="flex items-center gap-3 text-sm font-bold text-gray-700 cursor-pointer"><input type="checkbox" value="Opname" class="w-5 h-5 text-blue-600 rounded"> Audit Stok Opname</label>
                                         <label class="flex items-center gap-3 text-sm font-bold text-gray-700 cursor-pointer"><input type="checkbox" value="Layanan" class="w-5 h-5 text-blue-600 rounded"> Service & TT</label>
-                                        <label class="flex items-center gap-3 text-sm font-bold text-gray-700 cursor-pointer"><input type="checkbox" value="Retur" class="w-5 h-5 text-blue-600 rounded"> Retur Jual</label>
+                                        <label class="flex items-center gap-3 text-sm font-bold text-gray-700 cursor-pointer"><input type="checkbox" value="Retur" class="w-5 h-5 text-blue-600 rounded"> Retur Supplier</label>
                                         <label class="flex items-center gap-3 text-sm font-bold text-gray-700 cursor-pointer"><input type="checkbox" value="CRM" class="w-5 h-5 text-blue-600 rounded"> Data Pelanggan</label>
                                         <label class="flex items-center gap-3 text-sm font-bold text-gray-700 cursor-pointer"><input type="checkbox" value="Supplier" class="w-5 h-5 text-blue-600 rounded"> Data Pemasok</label>
                                         <label class="flex items-center gap-3 text-sm font-bold text-gray-700 cursor-pointer"><input type="checkbox" value="Kas" class="w-5 h-5 text-blue-600 rounded"> Buku Kas Owner</label>
@@ -512,45 +767,95 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- MENU RESTOCK (DENGAN FORM POTONG KAS V30) -->
-                <div id="menu-restock" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col xl:flex-row gap-8">
-                    <div class="w-full xl:w-1/3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit border-t-4 border-t-indigo-500">
-                        <h3 class="font-black text-gray-800 mb-2 text-xl">Mutasi Masuk Gudang</h3>
-                        <p class="text-xs text-gray-500 mb-6 font-medium leading-relaxed">Wajib diisi setiap ada pembelian stok dari Supplier atau tambahan aset lain agar riwayat modal tercatat.</p>
-                        <form id="formRestock" class="space-y-5">
-                            <div><select id="rstSKU" required class="w-full px-5 py-4 border border-gray-200 rounded-xl bg-gray-50 font-bold focus:ring-2 focus:ring-indigo-500 outline-none"><option value="">-- Pilih Barang dari Katalog --</option></select></div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <input type="number" id="rstQty" required placeholder="Qty Masuk" min="1" class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-indigo-50 font-black text-indigo-600">
-                                <div class="col-span-1">
-                                    <input type="text" inputmode="numeric" id="rstHarga" required placeholder="Total Uang Keluar (Rp)" class="input-rupiah w-full px-5 py-4 border border-rose-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none bg-rose-50 font-black text-rose-600 shadow-sm">
-                                    <p class="text-[9px] font-black text-rose-500 uppercase tracking-widest mt-2 leading-tight"><i class="fa-solid fa-triangle-exclamation"></i> Memotong Kas Operasional!</p>
-                                </div>
-                            </div>
-                            <div class="relative">
-                                <input type="text" id="rstSupplier" list="listSupplier" required placeholder="Ketik/Pilih Nama Supplier" class="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white shadow-sm font-bold transition-all">
-                                <datalist id="listSupplier"></datalist>
-                            </div>
-                            <button type="submit" id="btnSubmitRestock" class="w-full bg-indigo-600 text-white font-black py-4.5 rounded-xl shadow-lg hover:bg-indigo-700 transition-all text-lg mt-2">Simpan Stok Masuk</button>
-                        </form>
-                    </div>
-                    <div class="flex-1 min-w-0 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-black text-gray-800 text-xl">Riwayat Pemasukan Aset Gudang</h3>
-                            <button onclick="muatTabelRestock()" class="text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-4 py-2.5 rounded-xl font-bold transition-all"><i class="fa-solid fa-rotate"></i></button>
+
+                <!-- MENU 16: BUKU PANDUAN FULL VERSION -->
+                <div id="menu-panduan" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0">
+                    <style>@media print { .no-print { display: none !important; } }</style>
+                    <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-gray-100 relative">
+                        <div class="absolute top-8 right-8 flex gap-2 no-print">
+                            <button onclick="window.print()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg hover:bg-indigo-700 transition-colors"><i class="fa-solid fa-print mr-2"></i> Cetak / Simpan PDF</button>
                         </div>
-                        <div class="overflow-x-auto overflow-y-auto flex-1 border border-gray-100 rounded-2xl shadow-inner custom-scrollbar">
-                            <table class="w-full text-left text-sm whitespace-nowrap">
-                                <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-gray-100 sticky top-0 z-10">
-                                    <tr><th class="py-4 px-6">Tgl Masuk</th><th class="py-4 px-6">SKU / Nama Barang</th><th class="py-4 px-6 text-center">Qty (Pcs)</th><th class="py-4 px-6">Sumber / Supplier</th></tr>
-                                </thead>
-                                <tbody id="tabelRestockBody" class="divide-y divide-gray-50 text-gray-700 font-semibold"></tbody>
-                            </table>
+                        <div class="text-center mb-10 border-b border-gray-100 pb-8 mt-10 md:mt-0">
+                            <h1 class="text-3xl md:text-4xl font-black text-gray-900 mb-2">BUKU PANDUAN PENGGUNAAN</h1>
+                            <p class="text-indigo-600 font-bold uppercase tracking-widest">Sistem POS Enterprise - SANSTECH</p>
+                        </div>
+                        
+                        <div class="space-y-8 text-gray-700 leading-relaxed text-sm md:text-base">
+                            <section>
+                                <h3 class="text-lg font-black text-indigo-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-cash-register w-6 text-center"></i> 1. Kasir (Point of Sale)</h3>
+                                <ul class="list-disc pl-5 space-y-2 font-medium">
+                                    <li><b>Mencari Barang:</b> Gunakan kotak pencarian atau Scan Barcode/IMEI langsung. Klik kotak barang untuk masuk ke keranjang.</li>
+                                    <li><b>Diskon & PPN:</b> Masukkan nominal diskon rupiah atau persentase PPN di panel sebelah kanan sebelum checkout.</li>
+                                    <li><b>Pembayaran:</b> Jika memilih "Cash", masukkan Uang Pelanggan untuk memunculkan otomatis nilai "Kembalian" di Struk.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="text-lg font-black text-indigo-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-chart-pie w-6 text-center"></i> 2. Laporan & Riwayat (Owner)</h3>
+                                <ul class="list-disc pl-5 space-y-2 font-medium">
+                                    <li><b>Cetak Ulang Struk:</b> Buka menu "Riwayat Transaksi", pilih tanggal yang sesuai, lalu klik tombol "Struk" atau "Rincian".</li>
+                                    <li><b>Filter Waktu:</b> Di menu "Dashboard Analitik", pilih Tanggal/Bulan/Tahun untuk melihat Otomatis Omzet, Laba Bersih, dan Pengeluaran.</li>
+                                    <li><b>Laba Bersih:</b> Sistem ini sangat canggih. Laba Bersih dihitung otomatis dari: (Harga Jual Barang - Harga Modal Pabrik) lalu dikurangi dengan total Pengeluaran Kas (Gaji, Listrik, Operasional).</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="text-lg font-black text-indigo-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-boxes-stacked w-6 text-center"></i> 3. Inventory & Audit Gudang</h3>
+                                <ul class="list-disc pl-5 space-y-2 font-medium">
+                                    <li><b>Stok Masuk (Kulakan):</b> Menambah stok dari menu "Stok Masuk" akan <b>Otomatis Memotong Uang Kas Tunai Utama</b> sebesar (Harga Modal x Jumlah Qty).</li>
+                                    <li><b>Katalog Stok:</b> Klik icon pensil (Edit) di Katalog Stok untuk merevisi Harga Jual, Harga Modal, IMEI, atau Minus HP Bekas. <i>Hanya Owner yang bisa mengakses Edit Harga.</i></li>
+                                    <li><b>Stok Opname:</b> Menu wajib saat tutup toko. Karyawan menghitung fisik HP dan mencocokkan dengan sistem. Setiap selisih (kurang/lebih) akan tercatat permanen sebagai bukti riwayat audit.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="text-lg font-black text-indigo-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-arrow-right-arrow-left w-6 text-center"></i> 4. Tukar Tambah (TT) & Retur Supplier</h3>
+                                <ul class="list-disc pl-5 space-y-2 font-medium">
+                                    <li><b>Tukar Tambah:</b> HP bekas dari pelanggan akan langsung dilempar ke Gudang (Harga jual otomatis di-Markup naik 50% dari modal beli). Uang tunai pelanggan yang membayar selisih langsung masuk ke Omzet. Uang kas otomatis terpotong senilai harga beli HP Bekas tersebut.</li>
+                                    <li><b>Retur Supplier:</b> Mengembalikan barang cacat ke pabrik. Stok otomatis berkurang (-1). Jika memilih aksi "Refund Uang", sistem akan langsung mengembalikan Modal ke Uang Kas Utama.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="text-lg font-black text-indigo-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-building-columns w-6 text-center"></i> 5. Finance & Buku Kas Utama</h3>
+                                <ul class="list-disc pl-5 space-y-2 font-medium">
+                                    <li><b>Buku Kas Utama:</b> Halaman Jantung Bisnis. Berisi seluruh arus perputaran uang: Modal masuk, Omzet harian, pembayaran kulakan stok, sampai uang bayar listrik.</li>
+                                    <li><b>Catat Pengeluaran:</b> Segala biaya beli bensin, makan, gaji, dll dicatat dari sini. Nilai ini akan dipotong langsung dari Omzet untuk mencari "Laba Bersih Nyata".</li>
+                                    <li><b>Piutang Kasbon:</b> Karyawan/Pihak yang ngutang kasbon akan otomatis <b>memotong kas toko</b>. Saat hutang dibayar kembali lewat menu Lunaskan, kas toko otomatis <b>bertambah/balik kembali</b>.</li>
+                                </ul>
+                            </section>
+                            
+                            <section>
+                                <h3 class="text-lg font-black text-indigo-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-users w-6 text-center"></i> 6. Relasi Bisnis (Pelanggan & Supplier)</h3>
+                                <ul class="list-disc pl-5 space-y-2 font-medium">
+                                    <li><b>Pelanggan:</b> Data pelanggan otomatis tersimpan saat transaksi di Kasir (Cepat). Anda juga bisa menambah detailnya (Alamat dll) manual di menu Pelanggan. Klik WA untuk langsung Chat.</li>
+                                    <li><b>Supplier (Pemasok):</b> Daftar distributor/toko kulakan Anda. Data ini akan otomatis terhubung saat Anda menginput Stok Masuk atau saat mengirim Barang Retur.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="text-lg font-black text-indigo-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-fingerprint w-6 text-center"></i> 7. Sistem Absensi & HRD</h3>
+                                <ul class="list-disc pl-5 space-y-2 font-medium">
+                                    <li><b>Absen Kamera & GPS:</b> Karyawan wajib absen masuk dan pulang menggunakan kamera HP/Laptop. Sistem akan mencatat foto wajah dan melacak koordinat GPS secara real-time.</li>
+                                    <li><b>Pengajuan Izin/Sakit:</b> Karyawan bisa mengajukan izin dari panel ini. Owner dapat melakukan ACC atau Tolak pengajuan tersebut langsung dari tabel (Tombol hijau/merah).</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="text-lg font-black text-indigo-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-gear w-6 text-center"></i> 8. Konfigurasi Sistem (Admin)</h3>
+                                <ul class="list-disc pl-5 space-y-2 font-medium">
+                                    <li><b>Hak Akses (Role):</b> Owner bisa mendaftarkan akun karyawan baru, mengatur password, dan secara spesifik menceklis menu apa saja yang boleh/dilarang dibuka oleh karyawan tersebut.</li>
+                                    <li><b>Profil Toko:</b> Nama Toko dan Pesan Syarat & Ketentuan di bawah Struk kasir dapat diganti kapan saja, lalu sinkronkan ke Cloud.</li>
+                                </ul>
+                            </section>
+                            
+                            <div class="mt-10 p-5 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-2xl no-print">
+                                <p class="text-xs font-black text-indigo-800 uppercase tracking-widest mb-1">Dukungan Teknologi PWA</p>
+                                <p class="text-sm font-bold text-indigo-600">Sistem ini dapat diinstal langsung di Android/iOS dan Desktop PC (Add to Home Screen). Untuk melakukan update sistem ke versi terbaru, cukup klik tombol "Update Sekarang" pada banner yang meluncur otomatis di atas layar ketika developer (SANSTECH) merilis pembaruan.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div id="menu-barang" class="view-section hidden h-full p-6 md:p-8 overflow-y-auto bg-slate-50 absolute inset-0 flex flex-col"><div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4"><h2 class="text-3xl font-black text-gray-800">Master Data Barang</h2><button onclick="bukaModalBarang()" class="w-full md:w-auto bg-slate-900 text-white px-8 py-3.5 rounded-2xl font-bold shadow-xl flex items-center justify-center gap-3 hover:bg-black transition-all active:scale-95"><i class="fa-solid fa-plus"></i> Input Barang Baru</button></div><div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex-1 flex flex-col"><div class="p-6 border-b border-gray-100 flex gap-4 bg-slate-50/50"><div class="relative flex-1"><i class="fa-solid fa-magnifying-glass absolute left-5 top-4 text-gray-400"></i><input type="text" id="cariTabelBarang" placeholder="Cari Kode SKU, Nama Barang, atau IMEI..." class="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold shadow-sm"></div><button onclick="muatTabelBarang()" class="bg-white border border-gray-200 text-slate-600 px-6 py-3.5 rounded-xl font-bold hover:bg-gray-50 shadow-sm"><i class="fa-solid fa-rotate"></i></button></div><div class="overflow-x-auto overflow-y-auto flex-1 p-2 custom-scrollbar"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="text-slate-400 font-black uppercase tracking-widest text-[10px] border-b border-gray-100 sticky top-0 bg-white z-10"><tr><th class="py-5 px-6">SKU / Kode</th><th class="py-5 px-6">Identitas Perangkat</th><th class="py-5 px-6 text-right">Harga Jual</th><th class="py-5 px-6 text-center">Stok</th><th class="py-5 px-6 text-center">Label & Aksi</th></tr></thead><tbody id="tabelBarangBody" class="divide-y divide-gray-50"></tbody></table></div></div></div>
 
             </div>
         </main>
@@ -566,7 +871,29 @@
             
             <div class="p-6 md:p-8 overflow-y-auto flex-1 bg-slate-50/80 custom-scrollbar">
                 <form id="formTambahBarang" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div class="md:col-span-2"><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Nama Produk / Tipe Utama</label><input type="text" id="inputNama" required placeholder="Contoh: iPhone 13 Pro Max" class="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-black text-gray-800 bg-white shadow-sm transition-all text-lg"></div>
+                    <div class="md:col-span-2"><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Nama Produk / Tipe Utama</label><div class="grid grid-cols-2 gap-3 mb-4">
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Merek HP</label>
+                                    <select id="inputMerek" class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                                        <option value="IPH">Apple (iPhone)</option>
+                                        <option value="OP">Oppo</option>
+                                        <option value="SM">Samsung</option>
+                                        <option value="VV">Vivo</option>
+                                        <option value="RM">Realme</option>
+                                        <option value="INF">Infinix</option>
+                                        <option value="AND">Android Lainnya</option>
+                                        <option value="ACC">Aksesoris / Non-HP</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Jenis Garansi</label>
+                                    <select id="inputGaransiTipe" class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                                        <option value="RSM">Resmi (RSM)</option>
+                                        <option value="INTR">Internasional (INTR)</option>
+                                        <option value="-">Non-Garansi / Aksesoris</option>
+                                    </select>
+                                </div>
+                            </div><input type="text" id="inputNama" required placeholder="Contoh: iPhone 13 Pro Max" class="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-black text-gray-800 bg-white shadow-sm transition-all text-lg"></div>
                     <div><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Kapasitas (RAM / ROM)</label><input type="text" id="inputKapasitas" required placeholder="Contoh: 128GB atau 8/256GB" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 outline-none font-bold text-gray-700 bg-white shadow-sm transition-all"></div>
                     <div><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Warna (Color)</label><input type="text" id="inputWarna" required placeholder="Contoh: Sierra Blue" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 outline-none font-bold text-gray-700 bg-white shadow-sm transition-all"></div>
                     
@@ -632,14 +959,14 @@
 
     <!-- AUDIO SISTEM KASIR (In-App Notification) -->
     <audio id="audioSuccess" preload="auto">
-        <source src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" type="audio/mpeg">
+        <source src="https://raw.githubusercontent.com/IonDen/ion.sound/master/sounds/button_tiny.mp3" type="audio/mpeg">
     </audio>
     <audio id="audioError" preload="auto">
-        <source src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" type="audio/mpeg">
+        <source src="https://raw.githubusercontent.com/IonDen/ion.sound/master/sounds/computer_error.mp3" type="audio/mpeg">
     </audio>
     
     <script src="config.js"></script>
-    <script src="app.js?v=36"></script>
+    <script src="app.js?v=43"></script>
 
 </body>
 </html>
