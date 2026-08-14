@@ -390,7 +390,7 @@ function bukaScannerGlobal(target) {
                 
                 // Proteksi jika targetnya IMEI (Agar tidak salah baca SN/Barcode pabrik yang pendek)
                 let cleanText = text;
-                if(target === 'inputIMEI' || target === 'inputLacakIMEI') {
+                if(target === 'inputIMEI') {
                    let rawAngka = text.replace(/[^0-9]/g, '');
                    // Filter canggih: Jika terbaca campur aduk angka & huruf, paksa comot 15 digit angka IMEI-nya saja
                    if(rawAngka.length >= 15) {
@@ -1841,7 +1841,7 @@ function bukaScannerGlobal(target) {
                 
                 // Proteksi jika targetnya IMEI (Agar tidak salah baca SN/Barcode pabrik yang pendek)
                 let cleanText = text;
-                if(target === 'inputIMEI' || target === 'inputLacakIMEI') {
+                if(target === 'inputIMEI') {
                    let rawAngka = text.replace(/[^0-9]/g, '');
                    // Filter canggih: Jika terbaca campur aduk angka & huruf, paksa comot 15 digit angka IMEI-nya saja
                    if(rawAngka.length >= 15) {
