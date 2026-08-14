@@ -1836,8 +1836,14 @@ function bukaScannerGlobal(target) {
         if (!directQrCode) directQrCode = new Html5Qrcode("reader");
         
         if (!isCameraRunning) {
-            // Resolusi Layar Penuh (Tanpa kotak) agar SKU panjang terbaca sempurna
-            directQrCode.start({ facingMode: "environment" }, { fps: 15 }, (text) => {
+            // REVISI SUPER: Paksa Kamera Buka di Resolusi HD (1080p) agar garis rapat terbaca super tajam
+            const setKameraHD = { 
+                facingMode: "environment", 
+                width: { ideal: 1920 },
+                height: { ideal: 1080 }
+            };
+
+            directQrCode.start(setKameraHD, { fps: 15 }, (text) => {
                 
                 let cleanText = text;
                 // Proteksi Khusus di Menu Input Barang Baru (Tolak jika bukan IMEI angka 15 digit)
