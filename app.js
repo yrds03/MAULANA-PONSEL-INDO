@@ -1,5 +1,5 @@
 // =========================================================================================
-// 0. VARIABEL GLOBAL & FUNGSI RUPIAH FORMATTER (V30 ULTIMATE)
+// 0. VARIABEL GLOBAL & FUNGSI RUPIAH FORMATTER (V32 ULTIMATE FULL)
 // =========================================================================================
 let katalogBarang = []; 
 let keranjang = []; 
@@ -169,11 +169,76 @@ async function muatPengaturanToko() {
         if (result.status === true) {
             if (result.data.NAMA_TOKO) localStorage.setItem('pos_nama_toko', result.data.NAMA_TOKO);
             if (result.data.PESAN_STRUK) localStorage.setItem('pos_pesan_struk', result.data.PESAN_STRUK);
+            if (result.data.MEREK_CUSTOM) localStorage.setItem('pos_merek_custom', result.data.MEREK_CUSTOM);
             if(document.getElementById('setNamaToko')) document.getElementById('setNamaToko').value = localStorage.getItem('pos_nama_toko') || "MAULANA PONSEL INDO";
             if(document.getElementById('setPesanStruk')) document.getElementById('setPesanStruk').value = localStorage.getItem('pos_pesan_struk') || "Barang yang dibeli tidak dapat ditukar.";
+            if(window.muatOpsiMerek) window.muatOpsiMerek();
         }
     } catch (e) {}
 }
+
+window.muatOpsiMerek = function() {
+    let saved = localStorage.getItem('pos_merek_custom');
+    let html = `<option value="IPH">Apple (iPhone)</option><option value="OP">Oppo</option><option value="SM">Samsung</option><option value="VV">Vivo</option><option value="RM">Realme</option><option value="INF">Infinix</option>`;
+    if(saved) {
+        saved.split(',').forEach(m => {
+            if(m.trim()) html += `<option value="${m.trim().substring(0,3).toUpperCase()}">${m.trim()}</option>`;
+        });
+    }
+    html += `<option value="AND">Android Lainnya</option><option value="ACC">Aksesoris / Non-HP</option>`;
+    
+    let selInput = document.getElementById('inputMerek');
+    if(selInput) { let cur = selInput.value; selInput.innerHTML = html; if(cur) selInput.value = cur; }
+    
+    let selEdit = document.getElementById('editBrgMerek');
+    if(selEdit) { let cur = selEdit.value; selEdit.innerHTML = html; if(cur) selEdit.value = cur; }
+
+    return html;
+};
+
+window.tambahMerekCustom = function() {
+    const modalHtml = `
+    <div id="modalCustomMerek" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 transform scale-95 transition-transform duration-300">
+            <h3 class="font-black text-lg text-gray-800 mb-2">Tambah Merek HP Baru</h3>
+            <p class="text-xs text-gray-500 font-medium mb-5">Merek ini akan tersimpan permanen di database.</p>
+            <input type="text" id="inputMerekBaru" placeholder="Contoh: Xiaomi, Poco, Itel..." class="w-full px-5 py-4 border border-gray-200 rounded-xl font-bold bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none mb-5 text-gray-700 uppercase">
+            <div class="flex gap-3">
+                <button onclick="tutupModalMerek()" class="flex-1 py-3.5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors tracking-widest uppercase text-[10px]">Batal</button>
+                <button onclick="simpanMerekBaru()" class="flex-1 py-3.5 rounded-xl font-black text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition-colors tracking-widest uppercase text-[10px]">Simpan Permanen</button>
+            </div>
+        </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const m = document.getElementById('modalCustomMerek');
+    setTimeout(() => { m.classList.remove('opacity-0'); m.children[0].classList.remove('scale-95'); document.getElementById('inputMerekBaru').focus(); }, 10);
+    
+    window.tutupModalMerek = () => {
+        m.classList.add('opacity-0'); m.children[0].classList.add('scale-95');
+        setTimeout(() => { m.remove(); }, 300);
+    };
+    
+    window.simpanMerekBaru = async () => {
+        let val = document.getElementById('inputMerekBaru').value.trim().toUpperCase();
+        if(!val) return showToast("Nama merek tidak boleh kosong!", "error");
+        
+        let existing = localStorage.getItem('pos_merek_custom') || "";
+        let arrMerek = existing ? existing.split(',') : [];
+        if(!arrMerek.includes(val)) {
+            arrMerek.push(val);
+            let newData = arrMerek.join(',');
+            localStorage.setItem('pos_merek_custom', newData);
+            showToast("Menyimpan ke Server...", "success");
+            tutupModalMerek();
+            muatOpsiMerek();
+            
+            try { 
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'save_settings', token: localStorage.getItem('pos_token'), settings: { MEREK_CUSTOM: newData } }) }); 
+                showToast("Merek " + val + " tersimpan permanen!", "success");
+            } catch(e) {}
+        } else { showToast("Merek sudah ada!", "error"); }
+    };
+};
 
 // =========================================================================================
 // 4. LOGIN, LOGOUT & MENU NAVIGASI (TAHAN REFRESH & INJEKSI EXCEL)
@@ -211,6 +276,7 @@ function checkSession() {
         
         suntikTombolExcel(); syncOfflineDataQueue(); setDefaultDateFilters(); 
         renderSidebar(); muatKatalogBarang(); muatLaporan(); updateStatusAbsen(); muatPengaturanToko(); muatTabelAbsensi();
+        window.muatTabelSupplier();
     } else { 
         localStorage.clear(); document.getElementById('dashboardPage').classList.add('hidden'); document.getElementById('loginPage').classList.remove('hidden'); 
     }
@@ -499,7 +565,15 @@ async function muatKatalogBarang() {
 function updateDropdownSKU(data) { 
     const cRst = document.getElementById('rstSKU'); const cRet = document.getElementById('returSKU'); const cTT = document.getElementById('ttSkuBaru');
     let optsTersedia = '<option value="">-- Pilih HP Baru --</option>'; data.forEach(b => { if(b.stok > 0) optsTersedia += `<option value="${b.sku}">${b.sku} - ${b.namaBarang} (Rp ${formatRp(b.hargaJual)})</option>`; }); if(cTT) cTT.innerHTML = optsTersedia;
-    let optsRestock = '<option value="">-- Pilih Barang --</option>'; data.forEach(b => optsRestock += `<option value="${b.sku}">${b.sku} - ${b.namaBarang}</option>`); if(cRet) cRet.innerHTML = optsRestock;
+    let optsRestock = '<option value="">-- Pilih Barang --</option>'; data.forEach(b => optsRestock += `<option value="${b.sku}">${b.sku} - ${b.namaBarang}</option>`); 
+    if(cRet) { 
+        cRet.innerHTML = optsRestock; 
+        cRet.onchange = function() { 
+            const brg = katalogBarang.find(b => b.sku === this.value); 
+            let inputSup = document.getElementById('returSupplier'); 
+            if(brg && brg.supplier && brg.supplier !== "-" && inputSup) { inputSup.value = brg.supplier; } else if (inputSup) { inputSup.value = ""; }
+        }; 
+    }
     if(cRst) { cRst.innerHTML = optsRestock; cRst.onchange = function() { const brg = katalogBarang.find(b => b.sku === this.value); if(brg) { document.getElementById('rstHarga').value = ""; document.getElementById('rstQty').placeholder = `Sisa Stok: ${brg.stok} Pcs`; showToast(`Sisa stok di toko: ${brg.stok} Pcs`, 'success'); } else { document.getElementById('rstHarga').value = ""; document.getElementById('rstQty').placeholder = "Qty Masuk"; } }; }
 }
 
@@ -1088,7 +1162,7 @@ async function muatTabelBarang() {
             filteredBarang.forEach(item => { 
                 let isHabis = item.stok <= 0; let stBadge = item.status === 'Baru' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' : 'bg-amber-50 text-amber-600 border-amber-100'; 
                 let detailSpesifikasi = ""; if(item.kapasitas !== '-' || item.warna !== '-') detailSpesifikasi = `<span class="text-[9px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">${item.kapasitas}</span> <span class="text-[9px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">${item.warna}</span>`;
-                let minusBadge = (item.minus && item.minus !== '-' && item.minus !== '') ? `<span class="text-[9px] font-bold text-rose-500 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded mt-1.5 inline-block w-fit"><i class="fa-solid fa-triangle-exclamation"></i> Minus: ${item.minus}</span>` : '';
+                let minusBadge = (item.keterangan && item.keterangan !== '-' && item.keterangan !== '') ? `<span class="text-[9px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded mt-1.5 inline-block w-fit"><i class="fa-solid fa-circle-info"></i> Ket: ${item.keterangan}</span>` : '';
                 htmlString += `<tr class="hover:bg-slate-50 border-b border-gray-100"><td class="py-4 px-6 font-black text-xs uppercase tracking-widest text-indigo-600 bg-indigo-50/30">${item.sku}<br><span class="text-[9px] text-gray-400 font-bold mt-1 inline-block font-mono tracking-wider"><i class="fa-solid fa-barcode"></i> ${item.imei||'-'}</span></td><td class="py-4 px-6 font-black text-gray-800">${item.namaBarang}<br><div class="flex flex-wrap gap-1 mt-1.5">${detailSpesifikasi} <span class="text-[9px] font-black px-2 py-0.5 rounded border ${stBadge}">${item.status||'Baru'}</span></div>${minusBadge}</td><td class="py-4 px-6 text-right text-indigo-600 font-black text-lg">${formatRp(item.hargaJual)}</td><td class="py-4 px-6 text-center"><span class="px-4 py-1.5 rounded-lg text-xs font-black tracking-widest ${isHabis?'bg-rose-50 text-rose-600 border border-rose-100':'bg-emerald-50 text-emerald-600 border border-emerald-100'}">${isHabis?'HABIS':item.stok}</span></td><td class="py-4 px-6 text-center flex justify-center gap-2"><button onclick="cetakLabelBarcode('${item.sku}', '${item.namaBarang}', ${item.hargaJual}, '${item.kapasitas} ${item.warna}', '${item.imei}')" class="bg-white border border-gray-200 text-gray-700 w-9 h-9 rounded-xl text-[12px] font-black hover:bg-gray-50 transition-transform active:scale-95 shadow-sm flex items-center justify-center"><i class="fa-solid fa-barcode"></i></button><button onclick="bukaModalEdit('Barang', '${item.idBarang}')" class="text-indigo-500 bg-indigo-50 hover:bg-indigo-500 hover:text-white w-9 h-9 rounded-xl flex items-center justify-center transition-colors shadow-sm mr-2"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="hapusBarangDariKatalog('${item.idBarang}')" class="text-rose-500 bg-rose-50 hover:bg-rose-500 hover:text-white w-9 h-9 rounded-xl flex items-center justify-center transition-colors shadow-sm"><i class="fa-solid fa-trash-can"></i></button></td></tr>`; 
             }); 
             tbody.innerHTML = htmlString;
@@ -1104,19 +1178,58 @@ async function muatTabelBarang() {
 window.toggleBiayaService = function(val) { const panel = document.getElementById('panelBiayaSelesai'); if(val === 'Selesai') panel.classList.remove('hidden'); else panel.classList.add('hidden'); }
 
 function bukaModalEdit(konteks, idRow) {
-    const modal = document.getElementById('modalEdit'); const container = document.getElementById('editFormContainer'); const title = document.getElementById('editTitle');
-    if(konteks === 'Piutang') { title.innerText = "Eksekusi Pelunasan"; container.innerHTML = `<p class="text-sm font-bold text-gray-600 mb-5 leading-relaxed">Tandai tagihan/hutang ini sebagai Lunas?<br><br>Sistem akan otomatis <b>Menambah Kas</b> (jika ini Piutang Pelanggan) atau <b>Memotong Kas</b> (jika ini Hutang Toko ke Supplier) sesuai tipe yang Anda pilih di awal.</p><button onclick="lunasiPiutang('${idRow}')" class="w-full bg-emerald-500 text-white font-black text-lg py-4.5 rounded-2xl shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-colors">EKSEKUSI PELUNASAN</button>`; } 
-    else if(konteks === 'Layanan') { title.innerText = "Penyelesaian Service"; container.innerHTML = `<select id="editStatusVal" onchange="toggleBiayaService(this.value)" class="w-full px-5 py-4 border border-gray-200 rounded-2xl mb-4 font-bold bg-white focus:ring-4 focus:ring-indigo-500/20 outline-none shadow-sm"><option value="Diterima">Masih Service / Belum Selesai</option><option value="Selesai">Selesai (Siap Diambil & Bayar)</option><option value="Dibatalkan">Dibatalkan</option></select><div id="panelBiayaSelesai" class="hidden space-y-4 mb-5 p-5 bg-indigo-50 rounded-2xl border border-indigo-100 shadow-inner"><p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest"><i class="fa-solid fa-cash-register mr-1"></i> Pembayaran Kasir</p><input type="text" inputmode="numeric" id="editBiayaAkhir" placeholder="Biaya Akhir / Deal (Rp)" class="input-rupiah w-full px-5 py-4 border border-white rounded-xl font-black text-indigo-600 focus:ring-2 focus:ring-indigo-500 outline-none text-lg shadow-sm"><select id="editMetodeSelesai" class="w-full px-5 py-3 border border-white rounded-xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm text-sm"><option value="Cash">Tunai / Cash</option><option value="Transfer Bank">Transfer Bank</option><option value="QRIS">QRIS</option></select><p class="text-[9px] text-indigo-400 font-bold leading-tight">Uang akan otomatis tercatat ke Laporan Penjualan/Omzet Hari Ini.</p></div><button onclick="kirimUpdateLayanan('${idRow}')" class="w-full bg-indigo-600 text-white font-black text-lg py-4.5 rounded-2xl shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-colors">Simpan Status</button>`; }
-    else if(konteks === 'Barang') { 
-        const role = localStorage.getItem('pos_role') || ''; const uname = localStorage.getItem('pos_username') || '';
-        const isOwner = role.toLowerCase().includes('admin') || role.toLowerCase().includes('laporan') || role.toLowerCase().includes('owner') || uname.toLowerCase() === 'owner' || role === '';
-        if(isOwner) {
-            const brg = katalogBarang.find(b => b.idBarang === idRow); if(!brg) return showToast("Gagal memuat barang", "error");
-            title.innerText = "Edit Spesifikasi & Harga"; 
-            container.innerHTML = `<div class="space-y-4"><div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Nama Produk</label><input type="text" id="editBrgNama" class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-white shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none" value="${brg.namaBarang}"></div><div class="grid grid-cols-2 gap-3"><div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Kapasitas</label><input type="text" id="editBrgKap" class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-white shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none" value="${brg.kapasitas}"></div><div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Warna</label><input type="text" id="editBrgWarna" class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-white shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none" value="${brg.warna}"></div><div class="col-span-2"><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">IMEI / SN</label><input type="text" id="editBrgIMEI" class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-white shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none font-mono" value="${brg.imei}"></div><div class="col-span-2"><label class="text-[10px] font-black text-amber-500 uppercase tracking-widest ml-1 mb-1 block">Info Minus</label><input type="text" id="editBrgMinus" class="w-full px-4 py-3 border border-amber-200 rounded-xl font-bold bg-amber-50 shadow-sm focus:ring-2 focus:ring-amber-500 outline-none text-amber-900" value="${brg.minus}"></div></div><div class="grid grid-cols-2 gap-3"><div><label class="text-[10px] font-black text-rose-400 uppercase tracking-widest ml-1 mb-1 block">Harga Modal</label><input type="text" inputmode="numeric" id="editBrgModal" class="input-rupiah w-full px-4 py-3 border border-rose-200 rounded-xl font-black text-rose-600 bg-rose-50/50 shadow-sm focus:ring-2 focus:ring-rose-500 outline-none" value="${new Intl.NumberFormat('id-ID').format(brg.hargaModal)}"></div><div><label class="text-[10px] font-black text-indigo-400 uppercase tracking-widest ml-1 mb-1 block">Harga Jual</label><input type="text" inputmode="numeric" id="editBrgJual" class="input-rupiah w-full px-4 py-3 border border-emerald-200 rounded-xl font-black text-emerald-600 bg-emerald-50/50 shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none" value="${new Intl.NumberFormat('id-ID').format(brg.hargaJual)}"></div></div><div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Stok Fisik</label><input type="number" id="editBrgStok" class="w-full px-4 py-3 border border-gray-200 rounded-xl font-black text-gray-800 text-center text-xl bg-white shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none" value="${brg.stok}"></div><button onclick="kirimUpdateBarang('${idRow}')" class="w-full bg-slate-900 text-white font-black text-lg py-4 rounded-xl shadow-xl hover:bg-black transition-all transform active:scale-95 mt-2">Simpan Perubahan Data</button></div>`;
-        } else { title.innerText = "Akses Terbatas"; container.innerHTML = `<p class="text-sm text-indigo-700 bg-indigo-50 p-5 rounded-2xl mb-6 font-bold border border-indigo-100 shadow-inner leading-relaxed"><i class="fa-solid fa-shield-halved mr-2 text-lg text-indigo-400"></i>Sesuai SOP, perubahan Harga dan Spesifikasi Barang hanya dapat diakses oleh Administrator/Owner.</p><button onclick="tutupModalEdit()" class="w-full bg-slate-900 text-white font-black text-lg py-4.5 rounded-2xl shadow-xl shadow-slate-900/20 hover:bg-black transition-colors transform active:scale-95">Saya Mengerti</button>`; }
+    const modal = document.getElementById('modalEdit'); 
+    const container = document.getElementById('editFormContainer'); 
+    const title = document.getElementById('editTitle');
+    
+    if(konteks === 'Piutang') { 
+        title.innerText = "Eksekusi Pelunasan"; 
+        container.innerHTML = `<p class="text-sm font-bold text-gray-600 mb-5 leading-relaxed">Tandai tagihan/hutang ini sebagai Lunas?<br><br>Sistem akan otomatis <b>Menambah Kas</b> (jika ini Piutang Pelanggan) atau <b>Memotong Kas</b> (jika ini Hutang Toko ke Supplier) sesuai tipe yang Anda pilih di awal.</p><button onclick="lunasiPiutang('${idRow}')" class="w-full bg-emerald-500 text-white font-black text-lg py-4.5 rounded-2xl shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-colors">EKSEKUSI PELUNASAN</button>`; 
+    } 
+    else if(konteks === 'Layanan') { 
+        title.innerText = "Penyelesaian Service"; 
+        container.innerHTML = `<select id="editStatusVal" onchange="toggleBiayaService(this.value)" class="w-full px-5 py-4 border border-gray-200 rounded-2xl mb-4 font-bold bg-white focus:ring-4 focus:ring-indigo-500/20 outline-none shadow-sm"><option value="Diterima">Masih Service / Belum Selesai</option><option value="Selesai">Selesai (Siap Diambil & Bayar)</option><option value="Dibatalkan">Dibatalkan</option></select><div id="panelBiayaSelesai" class="hidden space-y-4 mb-5 p-5 bg-indigo-50 rounded-2xl border border-indigo-100 shadow-inner"><p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest"><i class="fa-solid fa-cash-register mr-1"></i> Pembayaran Kasir</p><input type="text" inputmode="numeric" id="editBiayaAkhir" placeholder="Biaya Akhir / Deal (Rp)" class="input-rupiah w-full px-5 py-4 border border-white rounded-xl font-black text-indigo-600 focus:ring-2 focus:ring-indigo-500 outline-none text-lg shadow-sm"><select id="editMetodeSelesai" class="w-full px-5 py-3 border border-white rounded-xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm text-sm"><option value="Cash">Tunai / Cash</option><option value="Transfer Bank">Transfer Bank</option><option value="QRIS">QRIS</option></select><p class="text-[9px] text-indigo-400 font-bold leading-tight">Uang akan otomatis tercatat ke Laporan Penjualan/Omzet Hari Ini.</p></div><button onclick="kirimUpdateLayanan('${idRow}')" class="w-full bg-indigo-600 text-white font-black text-lg py-4.5 rounded-2xl shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-colors">Simpan Status</button>`; 
     }
-    modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    else if(konteks === 'Barang') { 
+        const role = localStorage.getItem('pos_role') || ''; 
+        const uname = localStorage.getItem('pos_username') || '';
+        const isOwner = role.toLowerCase().includes('admin') || role.toLowerCase().includes('laporan') || role.toLowerCase().includes('owner') || uname.toLowerCase() === 'owner' || role === '';
+        
+        if(isOwner) {
+            const brg = katalogBarang.find(b => b.idBarang === idRow); 
+            if(!brg) return showToast("Gagal memuat barang", "error");
+            
+            title.innerText = "Edit Spesifikasi & Harga"; 
+            let curSt = brg.status || 'Baru';
+            let pecahSKU = String(brg.sku).split('-');
+            let curMerek = pecahSKU.length > 0 ? pecahSKU[0] : 'AND';
+            let curGaransi = pecahSKU.length >= 3 && (pecahSKU[2]==='RSM'||pecahSKU[2]==='INTR') ? pecahSKU[2] : '-';
+            
+            let htmlMerek = `<option value="IPH" ${curMerek==='IPH'?'selected':''}>Apple (iPhone)</option><option value="OP" ${curMerek==='OP'?'selected':''}>Oppo</option><option value="SM" ${curMerek==='SM'?'selected':''}>Samsung</option><option value="VV" ${curMerek==='VV'?'selected':''}>Vivo</option><option value="RM" ${curMerek==='RM'?'selected':''}>Realme</option><option value="INF" ${curMerek==='INF'?'selected':''}>Infinix</option>`;
+            let savedMerek = localStorage.getItem('pos_merek_custom');
+            if(savedMerek) { savedMerek.split(',').forEach(m => { if(m.trim()) { let val = m.trim().substring(0,3).toUpperCase(); htmlMerek += `<option value="${val}" ${curMerek===val?'selected':''}>${m.trim()}</option>`; } }); }
+            htmlMerek += `<option value="AND" ${curMerek==='AND'?'selected':''}>Android Lainnya</option><option value="ACC" ${curMerek==='ACC'?'selected':''}>Aksesoris / Non-HP</option>`;
+
+            let htmlGaransi = `<option value="RSM" ${curGaransi==='RSM'?'selected':''}>Resmi (RSM)</option><option value="INTR" ${curGaransi==='INTR'?'selected':''}>Internasional (INTR)</option><option value="-" ${curGaransi==='-'?'selected':''}>Non-Garansi / Aksesoris</option>`;
+
+            container.innerHTML = `<div class="space-y-4"><div class="md:col-span-2"><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Nama Produk / Tipe Utama</label><div class="grid grid-cols-2 gap-3 mb-4"><div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Merek HP</label><div class="flex gap-2 items-center"><select id="editBrgMerek" class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-white focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">${htmlMerek}</select><button type="button" onclick="tambahMerekCustom()" class="bg-indigo-50 text-indigo-600 px-4 py-3 rounded-xl font-black hover:bg-indigo-500 hover:text-white transition-colors shadow-sm border border-indigo-100" title="Tambah Merek Baru"><i class="fa-solid fa-plus"></i></button></div></div><div><label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">Jenis Garansi</label><select id="editBrgGaransi" class="w-full px-4 py-3 border border-gray-200 rounded-xl font-bold bg-white focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">${htmlGaransi}</select></div></div><input type="text" id="editBrgNama" class="w-full px-5 py-4 border border-gray-200 rounded-2xl font-black text-gray-800 bg-white shadow-sm outline-none text-lg" value="${brg.namaBarang}"></div><div class="grid grid-cols-2 gap-3"><div><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Kapasitas (RAM/ROM)</label><input type="text" id="editBrgKap" class="w-full px-4 py-3.5 border border-gray-200 rounded-xl font-bold text-gray-700 bg-white shadow-sm outline-none" value="${brg.kapasitas}"></div><div><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Warna (Color)</label><input type="text" id="editBrgWarna" class="w-full px-4 py-3.5 border border-gray-200 rounded-xl font-bold text-gray-700 bg-white shadow-sm outline-none" value="${brg.warna}"></div></div><div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex flex-col gap-1 shadow-inner"><label class="block text-[10px] font-black text-indigo-600 uppercase tracking-widest ml-1">SKU / Kode Unik (Dikunci)</label><input type="text" disabled class="w-full px-4 py-2 border border-transparent bg-transparent font-black text-indigo-800 outline-none text-lg uppercase tracking-wider" value="${brg.sku}"><p class="text-[9px] text-indigo-400 font-bold ml-1">*Hanya info SKU. Ubah Merek tidak merusak penjualan lama.</p></div><div><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">No. IMEI / Serial Number</label><input type="text" id="editBrgIMEI" class="w-full px-4 py-3.5 border border-gray-200 rounded-xl font-bold bg-white shadow-sm font-mono outline-none" value="${brg.imei}"></div><div><label class="block text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1.5 ml-1">Keterangan Barang</label><input type="text" id="editBrgKet" class="w-full px-4 py-3.5 border border-amber-200 rounded-xl font-bold bg-amber-50 shadow-sm focus:ring-2 focus:ring-amber-500 outline-none text-amber-900" value="${brg.keterangan || brg.minus || '-'}"></div><div><label class="block text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1.5 ml-1">Supplier Asal</label><input type="text" list="listSupplier" id="editBrgSupplier" class="w-full px-4 py-3.5 border border-emerald-200 rounded-xl font-bold bg-emerald-50 shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none text-emerald-900" placeholder="Ketik/Pilih Supplier..." value="${brg.supplier || '-'}"></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-[10px] font-black text-rose-500 uppercase tracking-widest mb-1.5 ml-1">Harga Modal</label><input type="text" inputmode="numeric" id="editBrgModal" class="input-rupiah w-full px-4 py-4 border border-rose-200 rounded-2xl font-black text-rose-600 bg-rose-50/30 shadow-sm focus:ring-2 focus:ring-rose-500 outline-none text-xl" value="${new Intl.NumberFormat('id-ID').format(brg.hargaModal)}"></div><div><label class="block text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1.5 ml-1">Harga Jual</label><input type="text" inputmode="numeric" id="editBrgJual" class="input-rupiah w-full px-4 py-4 border border-emerald-200 rounded-2xl font-black text-emerald-600 bg-emerald-50/30 shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none text-xl" value="${new Intl.NumberFormat('id-ID').format(brg.hargaJual)}"></div></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Stok Fisik</label><input type="number" id="editBrgStok" class="w-full px-4 py-4 border border-gray-200 rounded-2xl font-black text-center text-xl bg-white shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none" value="${brg.stok}"></div><div><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Kualitas Barang</label><select id="editBrgStatus" class="w-full px-4 py-4 border border-gray-200 rounded-2xl font-black bg-white shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700"><option value="Baru" ${curSt==='Baru'?'selected':''}>UNIT BARU</option><option value="Second" ${curSt==='Second'?'selected':''}>SECOND (BEKAS)</option></select></div></div><button onclick="kirimUpdateBarang('${idRow}')" class="w-full bg-slate-900 text-white font-black text-lg py-4.5 rounded-xl shadow-xl hover:bg-black transition-all transform active:scale-95 mt-4">Simpan Perubahan Data</button></div>`;
+            
+            if(window.muatOpsiMerek) {
+                let opts = window.muatOpsiMerek();
+                let sel = document.getElementById('editBrgMerek');
+                if(sel) { sel.innerHTML = opts; sel.value = curMerek; if(!sel.value) sel.value = "AND"; }
+            }
+            let sGaransi = document.getElementById('editBrgGaransi');
+            if(sGaransi) { sGaransi.value = curGaransi; if(!sGaransi.value) sGaransi.value = "-"; }
+
+        } else { 
+            title.innerText = "Akses Terbatas"; 
+            container.innerHTML = `<p class="text-sm text-indigo-700 bg-indigo-50 p-5 rounded-2xl mb-6 font-bold border border-indigo-100 shadow-inner leading-relaxed"><i class="fa-solid fa-shield-halved mr-2 text-lg text-indigo-400"></i>Sesuai SOP, perubahan Harga dan Spesifikasi Barang hanya dapat diakses oleh Administrator/Owner.</p><button onclick="tutupModalEdit()" class="w-full bg-slate-900 text-white font-black text-lg py-4.5 rounded-2xl shadow-xl shadow-slate-900/20 hover:bg-black transition-colors transform active:scale-95">Saya Mengerti</button>`; 
+        }
+    }
+    
+    modal.classList.remove('hidden'); 
+    setTimeout(() => modal.classList.remove('opacity-0'), 10);
 }
 
 function tutupModalEdit() { const modal = document.getElementById('modalEdit'); modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); }
@@ -1219,7 +1332,7 @@ window.kirimUpdateLayanan = async function(idRow) {
 
 window.kirimUpdateBarang = async function(idRow) {
     const btn = event.target; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...'; btn.disabled = true;
-    const payload = { action: 'update_barang', token: localStorage.getItem('pos_token'), id: idRow, nama: document.getElementById('editBrgNama').value, kapasitas: document.getElementById('editBrgKap').value, warna: document.getElementById('editBrgWarna').value, imei: document.getElementById('editBrgIMEI').value, minus: document.getElementById('editBrgMinus').value, modal: cleanRupiah(document.getElementById('editBrgModal').value), jual: cleanRupiah(document.getElementById('editBrgJual').value), stok: document.getElementById('editBrgStok').value };
+    const payload = { action: 'update_barang', token: localStorage.getItem('pos_token'), id: idRow, nama: document.getElementById('editBrgNama').value, kapasitas: document.getElementById('editBrgKap').value, warna: document.getElementById('editBrgWarna').value, imei: document.getElementById('editBrgIMEI').value, keterangan: document.getElementById('editBrgKet').value, supplier: document.getElementById('editBrgSupplier').value, modal: cleanRupiah(document.getElementById('editBrgModal').value), jual: cleanRupiah(document.getElementById('editBrgJual').value), stok: document.getElementById('editBrgStok').value, status: document.getElementById('editBrgStatus').value };
     try { await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }); showToast("Barang diupdate!", "success"); tutupModalEdit(); muatTabelBarang(); muatKatalogBarang(); } catch(e) { showToast("Gagal update barang", "error"); btn.innerHTML = 'Simpan Perubahan Data'; btn.disabled = false; }
 }
 
@@ -1264,7 +1377,7 @@ function bindFormSubmit(formId, btnId, sheetName, prefix, getArrayFunc, successM
 document.getElementById('formPengaturanToko')?.addEventListener('submit', async (e) => { e.preventDefault(); const btn = document.querySelector('#formPengaturanToko button'); const oriText = btn.innerHTML; btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyinkronkan...`; btn.disabled = true; const namaToko = document.getElementById('setNamaToko').value; const pesanStruk = document.getElementById('setPesanStruk').value; try { const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'save_settings', token: localStorage.getItem('pos_token'), settings: { NAMA_TOKO: namaToko, PESAN_STRUK: pesanStruk } }) }); const result = await res.json(); if(result.status) { showToast("Profil Toko tersimpan di Server!", "success"); localStorage.setItem('pos_nama_toko', namaToko); localStorage.setItem('pos_pesan_struk', pesanStruk); } else showToast(result.message, "error"); } catch(e) { showToast("Gagal koneksi server", "error"); } finally { btn.innerHTML = oriText; btn.disabled = false; } });
 
 // PENGIRIMAN DATA FORM BERSIH LAINNYA
-bindFormSubmit('formTambahBarang', 'btnSimpanBarang', 'Barang', 'BRG-', (row) => { row[1] = document.getElementById('inputSKU').value.trim().toUpperCase(); row[2] = document.getElementById('inputKategori').value; row[3] = document.getElementById('inputNama').value.trim(); row[4] = document.getElementById('inputKapasitas').value.trim() || "-"; row[5] = document.getElementById('inputWarna').value.trim() || "-"; row[6] = document.getElementById('inputIMEI').value.trim() || "-"; row[7] = document.getElementById('inputMinus').value.trim() || "-"; row[8] = cleanRupiah(document.getElementById('inputModal').value); row[9] = cleanRupiah(document.getElementById('inputJual').value); row[10] = document.getElementById('inputStok').value; row[11] = document.getElementById('inputStatus').value; row[12] = new Date().toLocaleString('id-ID'); row[13] = localStorage.getItem('pos_user_id'); }, "Barang Masuk Database", () => { tutupModalBarang(); muatTabelBarang(); muatKatalogBarang(); });
+bindFormSubmit('formTambahBarang', 'btnSimpanBarang', 'Barang', 'BRG-', (row) => { row[1] = document.getElementById('inputSKU').value.trim().toUpperCase(); row[2] = document.getElementById('inputKategori').value; row[3] = document.getElementById('inputNama').value.trim(); row[4] = document.getElementById('inputKapasitas').value.trim() || "-"; row[5] = document.getElementById('inputWarna').value.trim() || "-"; row[6] = document.getElementById('inputIMEI').value.trim() || "-"; row[7] = document.getElementById('inputKeterangan').value.trim() || "-"; row[8] = cleanRupiah(document.getElementById('inputModal').value); row[9] = cleanRupiah(document.getElementById('inputJual').value); row[10] = document.getElementById('inputStok').value; row[11] = document.getElementById('inputStatus').value; row[12] = new Date().toLocaleString('id-ID'); row[13] = localStorage.getItem('pos_user_id'); row[14] = document.getElementById('inputSupplierBarang')?.value.trim() || "-"; }, "Barang Masuk Database", () => { tutupModalBarang(); muatTabelBarang(); muatKatalogBarang(); });
 bindFormSubmit('formPengeluaran', 'btnSubmitKas', 'Keuangan', 'TRX-', (row) => { 
     let d = new Date(); 
     row[1] = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; 
@@ -1970,3 +2083,20 @@ window.eksekusiUpdatePWA = function() {
     if(btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Menginstal...'; btn.disabled = true; }
     if (newWorker) newWorker.postMessage('SKIP_WAITING');
 }
+// =========================================================================
+// SINKRONISASI DROPDOWN SUPPLIER OTOMATIS
+// =========================================================================
+setInterval(() => {
+    let datalist = document.getElementById('listSupplier');
+    if (!datalist) return;
+    
+    let opsi = '';
+    document.querySelectorAll('#tabelSupplierBody tr').forEach(tr => {
+        let namaSup = tr.cells[0]?.innerText;
+        if(namaSup && namaSup !== 'Belum ada data pemasok' && !namaSup.includes('Memuat') && namaSup !== 'Data Kosong') {
+            opsi += `<option value="${namaSup}">`;
+        }
+    });
+    
+    if(datalist.innerHTML !== opsi) datalist.innerHTML = opsi;
+}, 2000);
